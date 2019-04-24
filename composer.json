@@ -17,9 +17,9 @@
       "homepage": "https://github.com/tmtbe"
     }
   ],
-  "name": "go-swoole/easyroute",
+  "name": "go-swoole/easyroute-plugin",
   "type": "library",
   "keywords": ["server", "swoole"],
-  "description": "easyroute",
+  "description": "easyroute-plugin",
   "license": "MIT"
 }
