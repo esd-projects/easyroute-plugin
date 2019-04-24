@@ -6,14 +6,14 @@
  * Time: 14:54
  */
 
-namespace GoSwoole\Route\EasyRoute\Aspect;
+namespace GoSwoole\Plugins\EasyRoute\Aspect;
 
 
 use Go\Aop\Aspect;
 use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\Around;
 use GoSwoole\BaseServer\Server\Server;
-use GoSwoole\Route\EasyRoute\DispatchRoute;
+use GoSwoole\Plugins\EasyRoute\DispatchRoute;
 use Monolog\Logger;
 
 class RouteAspect implements Aspect

@@ -6,13 +6,13 @@
  * Time: 15:33
  */
 
-namespace GoSwoole\Route\EasyRoute;
+namespace GoSwoole\Plugins\EasyRoute;
 
 
 use FastRoute\Dispatcher;
 use GoSwoole\BaseServer\Server\Beans\Request;
 use GoSwoole\BaseServer\Server\Beans\Response;
-use GoSwoole\Route\EasyRoute\Controller\IController;
+use GoSwoole\Plugins\EasyRoute\Controller\IController;
 
 class DispatchRoute
 {

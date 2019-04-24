@@ -6,8 +6,8 @@
   },
   "autoload": {
     "psr-4": {
-      "GoSwoole\\Route\\": "src/",
-      "GoSwoole\\Route\\ExampleClass\\": "exampleClass/"
+      "GoSwoole\\Plugins\\": "src/",
+      "GoSwoole\\Plugins\\EasyRoute\\ExampleClass\\": "exampleClass/"
     }
   },
   "authors": [

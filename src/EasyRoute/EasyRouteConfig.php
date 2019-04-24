@@ -6,7 +6,7 @@
  * Time: 15:16
  */
 
-namespace GoSwoole\Route\EasyRoute;
+namespace GoSwoole\Plugins\EasyRoute;
 
 
 class EasyRouteConfig

@@ -6,7 +6,7 @@
  * Time: 16:20
  */
 
-namespace GoSwoole\Route\EasyRoute\Controller;
+namespace GoSwoole\Plugins\EasyRoute\Controller;
 
 
 use GoSwoole\BaseServer\Server\Server;

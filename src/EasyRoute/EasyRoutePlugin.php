@@ -6,14 +6,14 @@
  * Time: 14:42
  */
 
-namespace GoSwoole\Route\EasyRoute;
+namespace GoSwoole\Plugins\EasyRoute;
 
 
 use FastRoute\RouteCollector;
 use GoSwoole\BaseServer\Server\Context;
 use GoSwoole\BaseServer\Server\Plugin\AbstractPlugin;
 use GoSwoole\Plugins\Aop\AopPlugin;
-use GoSwoole\Route\EasyRoute\Aspect\RouteAspect;
+use GoSwoole\Plugins\EasyRoute\Aspect\RouteAspect;
 use Monolog\Logger;
 use function FastRoute\cachedDispatcher;
 

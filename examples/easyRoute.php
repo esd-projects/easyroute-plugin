@@ -5,9 +5,9 @@ use GoSwoole\BaseServer\Server\Config\PortConfig;
 use GoSwoole\BaseServer\Server\Config\ServerConfig;
 use GoSwoole\Plugins\Aop\AopConfig;
 use GoSwoole\Plugins\Aop\AopPlugin;
-use GoSwoole\Route\EasyRoute\EasyRouteConfig;
-use GoSwoole\Route\EasyRoute\EasyRoutePlugin;
-use GoSwoole\Route\ExampleClass\TestController;
+use GoSwoole\Plugins\EasyRoute\EasyRouteConfig;
+use GoSwoole\Plugins\EasyRoute\EasyRoutePlugin;
+use GoSwoole\Plugins\EasyRoute\ExampleClass\TestController;
 
 require __DIR__ . '/../vendor/autoload.php';
 

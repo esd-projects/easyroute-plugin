@@ -6,10 +6,10 @@
  * Time: 16:06
  */
 
-namespace GoSwoole\Route\ExampleClass;
+namespace GoSwoole\Plugins\EasyRoute\ExampleClass;
 
 
-use GoSwoole\Route\EasyRoute\Controller\EasyController;
+use GoSwoole\Plugins\EasyRoute\Controller\EasyController;
 use Monolog\Logger;
 
 class TestController extends EasyController
