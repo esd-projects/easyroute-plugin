@@ -36,7 +36,7 @@ $server->addPort("http", $httpPortConfig);
 $server->addPort("ws", $wsPortConfig);
 //添加插件
 $aopPlugin = new AopPlugin();
-$aopConfig = new AopConfig($serverConfig->getVendorDir() . "/go-swoole/base-server");
+$aopConfig = new AopConfig();
 //设置插件配置
 $aopPlugin->setAopConfig($aopConfig);
 $server->getPlugManager()->addPlug($aopPlugin);
