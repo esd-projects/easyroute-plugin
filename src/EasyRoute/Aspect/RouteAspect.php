@@ -14,7 +14,6 @@ use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\Around;
 use GoSwoole\BaseServer\Server\Server;
 use GoSwoole\Plugins\EasyRoute\DispatchRoute;
-use Monolog\Logger;
 
 class RouteAspect implements Aspect
 {
@@ -46,7 +45,7 @@ class RouteAspect implements Aspect
                 $response->end($result);
             }
             $response->end("");
-        }catch (\Throwable $e){
+        } catch (\Throwable $e) {
             $log = Server::$instance->getLog();
             $log->error($e);
         }
