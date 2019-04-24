@@ -36,9 +36,8 @@ $server->addPort("http", $httpPortConfig);
 $server->addPort("ws", $wsPortConfig);
 //添加插件
 $aopPlugin = new AopPlugin();
-$aopConfig = new AopConfig();
 //设置插件配置
-$aopPlugin->setAopConfig($aopConfig);
+$aopPlugin->setAopConfig(new AopConfig());
 $server->getPlugManager()->addPlug($aopPlugin);
 //添加路由信息
 $easyRouteConfig = new EasyRouteConfig();
