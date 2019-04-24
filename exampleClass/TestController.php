@@ -9,16 +9,17 @@
 namespace GoSwoole\Route\ExampleClass;
 
 
-use GoSwoole\Route\EasyRoute\Controller\IController;
+use GoSwoole\Route\EasyRoute\Controller\EasyController;
+use Monolog\Logger;
 
-class TestController implements IController
+class TestController extends EasyController
 {
 
     public function handle($values)
     {
-        if(empty($values)){
+        if (empty($values)) {
             return $this->index();
-        }else{
+        } else {
             return $this->other($values['name']);
         }
 
@@ -31,6 +32,7 @@ class TestController implements IController
 
     private function other($name)
     {
+        $this->log(Logger::INFO, $name);
         return $name;
     }
 }
