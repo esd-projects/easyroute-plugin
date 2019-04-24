@@ -5,7 +5,6 @@ use GoSwoole\BaseServer\Server\Config\PortConfig;
 use GoSwoole\BaseServer\Server\Config\ServerConfig;
 use GoSwoole\Plugins\Aop\AopConfig;
 use GoSwoole\Plugins\Aop\AopPlugin;
-use GoSwoole\Plugins\Aop\ExampleClass\MonitorAspect;
 use GoSwoole\Route\EasyRoute\EasyRouteConfig;
 use GoSwoole\Route\EasyRoute\EasyRoutePlugin;
 use GoSwoole\Route\ExampleClass\TestController;

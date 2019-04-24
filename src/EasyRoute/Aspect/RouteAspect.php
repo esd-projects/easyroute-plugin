@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: administrato
+ * User: 白猫
  * Date: 2019/4/24
  * Time: 14:54
  */
@@ -47,7 +47,7 @@ class RouteAspect implements Aspect
             }
             $response->end("");
         }catch (\Throwable $e){
-            $log = Server::$instance->getContext()->getDeepByClassName(Logger::class);
+            $log = Server::$instance->getLog();
             $log->error($e);
         }
         return;
