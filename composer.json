@@ -1,0 +1,25 @@
+{
+  "require": {
+    "go-swoole/base-server":"dev-master",
+    "go-swoole/aop-plugin":"dev-master",
+    "nikic/fast-route": "^1.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoSwoole\\Route\\": "src/",
+      "GoSwoole\\Route\\ExampleClass\\": "exampleClass/"
+    }
+  },
+  "authors": [
+    {
+      "name": "tmtbe",
+      "email": "896369042@qq.com",
+      "homepage": "https://github.com/tmtbe"
+    }
+  ],
+  "name": "go-swoole/easyroute",
+  "type": "library",
+  "keywords": ["server", "swoole"],
+  "description": "easyroute",
+  "license": "MIT"
+}
