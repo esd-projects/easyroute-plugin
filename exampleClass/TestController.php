@@ -11,10 +11,11 @@ namespace GoSwoole\Plugins\EasyRoute\ExampleClass;
 
 use GoSwoole\BaseServer\Plugins\Logger\GetLogger;
 use GoSwoole\BaseServer\Server\Beans\Request;
+use GoSwoole\Plugins\EasyRoute\Controller\IController;
 use GoSwoole\Plugins\EasyRoute\GetHttp;
 use Monolog\Logger;
 
-class TestController
+class TestController implements IController
 {
     use GetHttp;
     use GetLogger;
