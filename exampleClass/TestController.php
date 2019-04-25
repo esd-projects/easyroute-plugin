@@ -9,11 +9,16 @@
 namespace GoSwoole\Plugins\EasyRoute\ExampleClass;
 
 
+use GoSwoole\BaseServer\Plugins\Logger\GetLogger;
+use GoSwoole\BaseServer\Server\Beans\Request;
 use GoSwoole\Plugins\EasyRoute\Controller\EasyController;
+use GoSwoole\Plugins\EasyRoute\GetHttp;
 use Monolog\Logger;
 
 class TestController extends EasyController
 {
+    use GetHttp;
+    use GetLogger;
 
     public function handle($values)
     {
@@ -27,6 +32,7 @@ class TestController extends EasyController
 
     private function index()
     {
+        $this->info($this->getRequest()->getServer(Request::SERVER_REQUEST_METHOD));
         return "Index";
     }
 
