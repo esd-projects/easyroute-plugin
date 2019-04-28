@@ -11,6 +11,12 @@ namespace GoSwoole\Plugins\EasyRoute;
 
 class EasyRouteConfig
 {
+    /**
+     * 是否直接aop注入
+     * @var bool
+     */
+    private $autoAspect;
+
     private $routes = [];
     /**
      * @var bool
@@ -20,6 +26,11 @@ class EasyRouteConfig
      * @var string
      */
     private $cacheFile;
+
+    public function __construct($autoAspect = true)
+    {
+        $this->autoAspect = $autoAspect;
+    }
 
     /**
      * 添加路由
@@ -74,5 +85,21 @@ class EasyRouteConfig
     public function setCacheFile(string $cacheFile): void
     {
         $this->cacheFile = $cacheFile;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAutoAspect(): bool
+    {
+        return $this->autoAspect;
+    }
+
+    /**
+     * @param bool $autoAspect
+     */
+    public function setAutoAspect(bool $autoAspect): void
+    {
+        $this->autoAspect = $autoAspect;
     }
 }

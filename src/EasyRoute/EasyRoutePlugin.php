@@ -93,8 +93,8 @@ class EasyRoutePlugin extends AbstractPlugin
         $this->dispatchRoute = new DispatchRoute($dispatcher);
         //AOP注入
         $aopPlugin = $context->getServer()->getPlugManager()->getPlug(AopPlugin::class);
-        if ($aopPlugin instanceof AopPlugin) {
-            $aopPlugin->getAopConfig()->addIncludePath($serverConfig->getVendorDir()."/go-swoole/base-server");
+        if ($aopPlugin instanceof AopPlugin && $this->easyRouteConfig->isAutoAspect()) {
+            $aopPlugin->getAopConfig()->addIncludePath($serverConfig->getVendorDir() . "/go-swoole/base-server");
             $aopPlugin->getAopConfig()->addAspect(new RouteAspect($this->dispatchRoute));
         } else {
             $log->warn("没有添加AOP插件，EasyRoute无法自动工作，需要手动配置入口");
