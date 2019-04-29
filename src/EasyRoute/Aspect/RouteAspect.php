@@ -35,20 +35,15 @@ class RouteAspect implements Aspect
      */
     protected function aroundRequest(MethodInvocation $invocation)
     {
-        try {
-            list($request, $response) = $invocation->getArguments();
-            $result = $this->dispatchRoute->handle($request, $response);
-            if ($result != null) {
-                if (!is_string($result)) {
-                    $result = json_encode($result);
-                }
-                $response->end($result);
+        list($request, $response) = $invocation->getArguments();
+        $result = $this->dispatchRoute->handle($request, $response);
+        if ($result != null) {
+            if (!is_string($result)) {
+                $result = json_encode($result);
             }
-            $response->end("");
-        } catch (\Throwable $e) {
-            $log = Server::$instance->getLog();
-            $log->error($e);
+            $response->end($result);
         }
+        $response->end("");
         return;
     }
 }
