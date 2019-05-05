@@ -8,98 +8,117 @@
 
 namespace GoSwoole\Plugins\EasyRoute;
 
+use GoSwoole\BaseServer\Server\Config\PortConfig;
+use GoSwoole\Plugins\EasyRoute\PackTool\LenJsonPack;
+use GoSwoole\Plugins\EasyRoute\RouteTool\NormalRoute;
 
-class EasyRouteConfig
+class EasyRouteConfig extends PortConfig
 {
-    /**
-     * 是否直接aop注入
-     * @var bool
-     */
-    private $autoAspect;
-
-    private $routes = [];
-    /**
-     * @var bool
-     */
-    private $cacheDisabled = true;
     /**
      * @var string
      */
-    private $cacheFile;
+    protected $controllerNameSpace = "";
 
-    public function __construct($autoAspect = true)
+    /**
+     * @var string
+     */
+    protected $packTool = LenJsonPack::class;
+
+    /**
+     * @var string
+     */
+    protected $routeTool = NormalRoute::class;
+
+    /**
+     * @var string
+     */
+    protected $methodPrefix = "";
+
+    /**
+     * @var string[]
+     */
+    protected $middleware = [];
+
+
+    /**
+     * @return string
+     */
+    public function getPackTool(): string
     {
-        $this->autoAspect = $autoAspect;
+        return $this->packTool;
     }
 
     /**
-     * 添加路由
-     * @param $httpMethod
-     * @param $route
-     * @param $className
+     * @param string $packTool
      */
-    public function addRoute($httpMethod, $route, $className)
+    public function setPackTool(string $packTool): void
     {
-        $this->routes[] = [
-            "httpMethod" => $httpMethod,
-            "route" => $route,
-            "className" => $className
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    public function getRoutes(): array
-    {
-        return $this->routes;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isCacheDisabled(): bool
-    {
-        return $this->cacheDisabled;
-    }
-
-    /**
-     * @param bool $cacheDisabled
-     */
-    public function setCacheDisabled(bool $cacheDisabled): void
-    {
-        $this->cacheDisabled = $cacheDisabled;
+        $this->packTool = $packTool;
     }
 
     /**
      * @return string
      */
-    public function getCacheFile()
+    public function getRouteTool(): string
     {
-        return $this->cacheFile;
+        return $this->routeTool;
     }
 
     /**
-     * @param string $cacheFile
+     * @param string $routeTool
      */
-    public function setCacheFile(string $cacheFile): void
+    public function setRouteTool(string $routeTool): void
     {
-        $this->cacheFile = $cacheFile;
+        $this->routeTool = $routeTool;
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function isAutoAspect(): bool
+    public function getMethodPrefix(): string
     {
-        return $this->autoAspect;
+        return $this->methodPrefix;
     }
 
     /**
-     * @param bool $autoAspect
+     * @param string $methodPrefix
      */
-    public function setAutoAspect(bool $autoAspect): void
+    public function setMethodPrefix(string $methodPrefix): void
     {
-        $this->autoAspect = $autoAspect;
+        $this->methodPrefix = $methodPrefix;
     }
+
+    /**
+     * @return string[]
+     */
+    public function getMiddleware(): array
+    {
+        return $this->middleware;
+    }
+
+    /**
+     * @param string[] $middleware
+     */
+    public function setMiddleware(array $middleware): void
+    {
+        $this->middleware = $middleware;
+    }
+
+    /**
+     * @return string
+     */
+    public function getControllerNameSpace(): string
+    {
+        return $this->controllerNameSpace;
+    }
+
+    /**
+     * @param string $controllerNameSpace
+     */
+    public function setControllerNameSpace(string $controllerNameSpace): void
+    {
+        $this->controllerNameSpace = $controllerNameSpace;
+    }
+
+
 }

@@ -9,36 +9,32 @@
 namespace GoSwoole\Plugins\EasyRoute\ExampleClass;
 
 
-use GoSwoole\BaseServer\Plugins\Logger\GetLogger;
-use GoSwoole\BaseServer\Server\Beans\Request;
-use GoSwoole\Plugins\EasyRoute\Controller\IController;
-use GoSwoole\Plugins\EasyRoute\GetHttp;
-use Monolog\Logger;
+use GoSwoole\Plugins\EasyRoute\Controller\EasyController;
 
-class TestController implements IController
+class TestController extends EasyController
 {
-    use GetHttp;
-    use GetLogger;
-
-    public function handle($values)
+    /**
+     * 每次请求都会调用
+     * @param $methodName
+     * @return mixed
+     */
+    protected function initialization(string $methodName)
     {
-        if (empty($values)) {
-            return $this->index();
-        } else {
-            return $this->other($values['name']);
-        }
 
     }
 
-    private function index()
+    /**
+     * 找不到方法时调用
+     * @param $methodName
+     * @return mixed
+     */
+    protected function defaultMethod(string $methodName)
     {
-        $this->info($this->getRequest()->getServer(Request::SERVER_REQUEST_METHOD));
-        return "Index";
+        return $methodName;
     }
 
-    private function other($name)
-    {
-        $this->log(Logger::INFO, $name);
-        return $name;
+
+    public function http_test(){
+        return "test";
     }
 }
