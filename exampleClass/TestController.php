@@ -37,4 +37,8 @@ class TestController extends EasyController
     public function http_test(){
         return "test";
     }
+
+    public function ws_test(){
+        return "test";
+    }
 }

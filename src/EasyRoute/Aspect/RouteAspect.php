@@ -13,6 +13,8 @@ use Go\Aop\Aspect;
 use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\Around;
 use GoSwoole\BaseServer\Server\AbstractServerPort;
+use GoSwoole\BaseServer\Server\Beans\WebSocketFrame;
+use GoSwoole\BaseServer\Server\Server;
 use GoSwoole\Plugins\EasyRoute\Controller\IController;
 use GoSwoole\Plugins\EasyRoute\EasyRouteConfig;
 use GoSwoole\Plugins\EasyRoute\PackTool\IPack;
@@ -67,7 +69,7 @@ class RouteAspect implements Aspect
      * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
      * @throws RouteException
      */
-    protected function aroundRequest(MethodInvocation $invocation)
+    protected function aroundHttpRequest(MethodInvocation $invocation)
     {
         list($request, $response) = $invocation->getArguments();
         $abstractServerPort = $invocation->getThis();
@@ -82,6 +84,87 @@ class RouteAspect implements Aspect
             $response->end($result);
         }
         $response->end("");
+        return;
+    }
+
+    /**
+     * around onTcpReceive
+     *
+     * @param MethodInvocation $invocation Invocation
+     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onTcpReceive(*))")
+     * @throws RouteException
+     */
+    protected function aroundTcpReceive(MethodInvocation $invocation)
+    {
+        list($fd, $reactorId, $data) = $invocation->getArguments();
+        $abstractServerPort = $invocation->getThis();
+        if ($abstractServerPort instanceof AbstractServerPort) {
+            $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
+            $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
+            $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
+            $clientData = $packTool->unPack($data, $easyRouteConfig);
+            $routeTool->handleClientData($clientData);
+            $controllerName = $routeTool->getControllerName();
+            $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
+            $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
+            $result = $controllerInstance->handle($methodName, $routeTool->getParams());
+            if ($result != null) {
+                Server::$instance->send($fd, $packTool->pack($result, $easyRouteConfig));
+            }
+        }
+        return;
+    }
+
+    /**
+     * around onWsMessage
+     *
+     * @param MethodInvocation $invocation Invocation
+     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onWsMessage(*))")
+     * @throws RouteException
+     */
+    protected function aroundWsMessage(MethodInvocation $invocation)
+    {
+        list($frame) = $invocation->getArguments();
+        $abstractServerPort = $invocation->getThis();
+        if ($abstractServerPort instanceof AbstractServerPort && $frame instanceof WebSocketFrame) {
+            $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
+            $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
+            $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
+            $clientData = $packTool->unPack($frame->getData(), $easyRouteConfig);
+            $routeTool->handleClientData($clientData);
+            $controllerName = $routeTool->getControllerName();
+            $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
+            $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
+            $result = $controllerInstance->handle($methodName, $routeTool->getParams());
+            if ($result != null) {
+                Server::$instance->wsPush($frame->getFd(), $packTool->pack($result, $easyRouteConfig));
+            }
+        }
+        return;
+    }
+
+    /**
+     * around onUdpPacket
+     *
+     * @param MethodInvocation $invocation Invocation
+     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onUdpPacket(*))")
+     * @throws RouteException
+     */
+    protected function aroundUdpPacket(MethodInvocation $invocation)
+    {
+        list($data, $clientInfo) = $invocation->getArguments();
+        $abstractServerPort = $invocation->getThis();
+        if ($abstractServerPort instanceof AbstractServerPort) {
+            $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
+            $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
+            $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
+            $clientData = $packTool->unPack($data, $easyRouteConfig);
+            $routeTool->handleClientData($clientData);
+            $controllerName = $routeTool->getControllerName();
+            $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
+            $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
+            $controllerInstance->handle($methodName, $routeTool->getParams());
+        }
         return;
     }
 

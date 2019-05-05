@@ -3,6 +3,7 @@
 namespace GoSwoole\Plugins\EasyRoute\RouteTool;
 
 use GoSwoole\BaseServer\Server\Beans\Request;
+use GoSwoole\BaseServer\Server\Beans\Response;
 use GoSwoole\Plugins\EasyRoute\ClientData;
 
 /**
@@ -13,15 +14,19 @@ use GoSwoole\Plugins\EasyRoute\ClientData;
  */
 interface IRoute
 {
-    function handleClientData(ClientData $data);
+    public function handleClientData(ClientData $data);
 
-    function handleClientRequest(Request $request);
+    public function handleClientRequest(Request $request);
 
-    function getControllerName();
+    public function getControllerName();
 
-    function getMethodName();
+    public function getMethodName();
 
-    function getParams();
+    public function getParams();
 
-    function getPath();
+    public function getPath();
+
+    public function errorHandle(\Throwable $e, $fd);
+
+    public function errorHttpHandle(\Throwable $e, Request $request, Response $response);
 }

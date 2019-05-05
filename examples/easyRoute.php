@@ -7,6 +7,8 @@ use GoSwoole\Plugins\Aop\AopConfig;
 use GoSwoole\Plugins\Aop\AopPlugin;
 use GoSwoole\Plugins\EasyRoute\EasyRouteConfig;
 use GoSwoole\Plugins\EasyRoute\EasyRoutePlugin;
+use GoSwoole\Plugins\EasyRoute\PackTool\LenJsonPack;
+use GoSwoole\Plugins\EasyRoute\PackTool\NonJsonPack;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -18,6 +20,7 @@ $httpPortConfig->setPort(8080);
 $httpPortConfig->setSockType(PortConfig::SWOOLE_SOCK_TCP);
 $httpPortConfig->setOpenHttpProtocol(true);
 $httpPortConfig->setControllerNameSpace("GoSwoole\Plugins\EasyRoute\ExampleClass");
+$httpPortConfig->setPackTool(LenJsonPack::class);
 $httpPortConfig->setMethodPrefix("http_");
 
 $wsPortConfig = new EasyRouteConfig();
@@ -26,6 +29,7 @@ $wsPortConfig->setPort(8081);
 $wsPortConfig->setSockType(PortConfig::SWOOLE_SOCK_TCP);
 $wsPortConfig->setOpenHttpProtocol(true);
 $wsPortConfig->setControllerNameSpace("GoSwoole\Plugins\EasyRoute\ExampleClass");
+$wsPortConfig->setPackTool(NonJsonPack::class);
 $wsPortConfig->setMethodPrefix("ws_");
 
 //---服务器配置---
@@ -38,7 +42,7 @@ $server = new DefaultServer($serverConfig);
 $server->addPort("http", $httpPortConfig);
 $server->addPort("ws", $wsPortConfig);
 //添加插件
-$aopPlugin = new AopPlugin(new AopConfig(__DIR__."/../exampleClass"));
+$aopPlugin = new AopPlugin(new AopConfig(__DIR__ . "/../exampleClass"));
 $server->getPlugManager()->addPlug($aopPlugin);
 //添加路由信息
 $easyRoutePlugin = new EasyRoutePlugin();

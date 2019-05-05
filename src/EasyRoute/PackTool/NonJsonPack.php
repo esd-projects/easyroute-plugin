@@ -8,18 +8,22 @@
 
 namespace GoSwoole\Plugins\EasyRoute\PackTool;
 
+use GoSwoole\BaseServer\Plugins\Logger\GetLogger;
 use GoSwoole\BaseServer\Server\Config\PortConfig;
+use GoSwoole\BaseServer\Server\Server;
+use GoSwoole\Plugins\EasyRoute\ClientData;
 use GoSwoole\Plugins\EasyRoute\PackException;
 
 class NonJsonPack implements IPack
 {
+    use GetLogger;
     /**
      * @param $data
      * @param PortConfig $portConfig
-     * @param null $topic
+     * @param string|null $topic
      * @return false|string
      */
-    public function pack($data, PortConfig $portConfig, $topic = null)
+    public function pack(string $data, PortConfig $portConfig, ?string $topic = null)
     {
         return json_encode($data, JSON_UNESCAPED_UNICODE);
     }
@@ -27,25 +31,35 @@ class NonJsonPack implements IPack
     /**
      * @param $data
      * @param PortConfig $portConfig
-     * @return mixed
+     * @return ClientData
      * @throws PackException
      */
-    public function unPack($data, PortConfig $portConfig)
+    public function unPack(string $data, PortConfig $portConfig): ClientData
     {
         $value = json_decode($data);
         if (empty($value)) {
             throw new PackException('json unPack 失败');
         }
-        return $value;
+        $clientData = new ClientData();
+        $clientData->setData($value);
+        $clientData->setControllerName($value['c']);
+        $clientData->setMethodName($value['m']);
+        return $clientData;
     }
 
-    public function encode($buffer)
+    public function encode(string $buffer)
     {
         return;
     }
 
-    public function decode($buffer)
+    public function decode(string $buffer)
     {
         return;
+    }
+
+    public function errorHandle(\Throwable $e, int $fd)
+    {
+        $this->error($e);
+        Server::$instance->closeFd($fd);
     }
 }

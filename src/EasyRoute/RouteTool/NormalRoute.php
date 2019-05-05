@@ -11,6 +11,8 @@ namespace GoSwoole\Plugins\EasyRoute\RouteTool;
 
 use GoSwoole\BaseServer\Plugins\Logger\GetLogger;
 use GoSwoole\BaseServer\Server\Beans\Request;
+use GoSwoole\BaseServer\Server\Beans\Response;
+use GoSwoole\BaseServer\Server\Server;
 use GoSwoole\Plugins\EasyRoute\ClientData;
 use GoSwoole\Plugins\EasyRoute\RouteException;
 
@@ -94,5 +96,17 @@ class NormalRoute implements IRoute
     public function getClientData(): ClientData
     {
         return $this->clientData;
+    }
+
+    public function errorHandle(\Throwable $e, $fd)
+    {
+        $this->error($e);
+        Server::$instance->closeFd($fd);
+    }
+
+    public function errorHttpHandle(\Throwable $e, Request $request, Response $response)
+    {
+        $this->error($e);
+        $response->end($e->getMessage());
     }
 }

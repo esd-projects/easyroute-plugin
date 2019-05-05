@@ -8,7 +8,10 @@
 
 namespace GoSwoole\Plugins\EasyRoute\PackTool;
 
+use GoSwoole\BaseServer\Plugins\Logger\GetLogger;
 use GoSwoole\BaseServer\Server\Config\PortConfig;
+use GoSwoole\BaseServer\Server\Server;
+use GoSwoole\Plugins\EasyRoute\ClientData;
 use GoSwoole\Plugins\EasyRoute\PackException;
 
 /**
@@ -18,6 +21,8 @@ use GoSwoole\Plugins\EasyRoute\PackException;
  */
 class LenJsonPack extends AbstractPack
 {
+    use GetLogger;
+
     /**
      * 数据包编码
      * @param string $buffer
@@ -43,11 +48,11 @@ class LenJsonPack extends AbstractPack
     /**
      * @param $data
      * @param PortConfig $portConfig
-     * @param null $topic
+     * @param string|null $topic
      * @return string
      * @throws PackException
      */
-    public function pack($data, PortConfig $portConfig, $topic = null)
+    public function pack(string $data, PortConfig $portConfig, ?string $topic = null)
     {
         $this->portConfig = $portConfig;
         return $this->encode(json_encode($data, JSON_UNESCAPED_UNICODE));
@@ -56,16 +61,26 @@ class LenJsonPack extends AbstractPack
     /**
      * @param $data
      * @param PortConfig $portConfig
-     * @return mixed
+     * @return ClientData
      * @throws PackException
      */
-    public function unPack($data, PortConfig $portConfig)
+    public function unPack(string $data, PortConfig $portConfig): ClientData
     {
         $this->portConfig = $portConfig;
         $value = json_decode($this->decode($data));
         if (empty($value)) {
             throw new PackException('json unPack 失败');
         }
-        return $value;
+        $clientData = new ClientData();
+        $clientData->setData($value);
+        $clientData->setControllerName($value['c']);
+        $clientData->setMethodName($value['m']);
+        return $clientData;
+    }
+
+    public function errorHandle(\Throwable $e, int $fd)
+    {
+        $this->error($e);
+        Server::$instance->closeFd($fd);
     }
 }
