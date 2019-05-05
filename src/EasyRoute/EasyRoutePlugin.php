@@ -24,6 +24,10 @@ class EasyRoutePlugin extends AbstractPlugin
      * @var EasyRouteConfig[]
      */
     private $easyRouteConfigs = [];
+    /**
+     * @var RouteAspect
+     */
+    private $routeAspect;
 
     public function __construct()
     {
@@ -54,18 +58,20 @@ class EasyRoutePlugin extends AbstractPlugin
         $configs = Server::$instance->getConfigContext()->get(PortConfig::key);
         foreach ($configs as $key => $value) {
             $easyRouteConfig = new EasyRouteConfig();
-            if(empty($easyRouteConfig->getControllerNameSpace())){
+            if (empty($easyRouteConfig->getControllerNameSpace())) {
                 $easyRouteConfig->setControllerNameSpace("GoSwoole\\Controllers");
             }
             $easyRouteConfig->setName($key);
             $easyRouteConfig->merge();
-            $this->easyRouteConfigs[$key] = $easyRouteConfig->buildFromConfig($value);
+            $easyRouteConfig->buildFromConfig($value);
+            $this->easyRouteConfigs[$easyRouteConfig->getPort()] = $easyRouteConfig;
         }
         //AOP注入
         $aopPlugin = $context->getServer()->getPlugManager()->getPlug(AopPlugin::class);
         if ($aopPlugin instanceof AopPlugin) {
             $aopPlugin->getAopConfig()->addIncludePath($serverConfig->getVendorDir() . "/go-swoole/base-server");
-            $aopPlugin->getAopConfig()->addAspect(new RouteAspect($this->easyRouteConfigs));
+            $this->routeAspect = new RouteAspect($this->easyRouteConfigs);
+            $aopPlugin->getAopConfig()->addAspect($this->routeAspect);
         } else {
             $this->warn("没有添加AOP插件，EasyRoute无法自动工作，需要手动配置入口");
         }
@@ -79,5 +85,13 @@ class EasyRoutePlugin extends AbstractPlugin
     public function beforeProcessStart(Context $context)
     {
         $this->ready();
+    }
+
+    /**
+     * @return RouteAspect
+     */
+    public function getRouteAspect(): RouteAspect
+    {
+        return $this->routeAspect;
     }
 }

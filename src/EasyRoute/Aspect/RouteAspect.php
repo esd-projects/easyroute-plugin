@@ -191,7 +191,7 @@ class RouteAspect implements Aspect
         list($data, $clientInfo) = $invocation->getArguments();
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort) {
-            $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
+            $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
             $clientData = $packTool->unPack($data, $easyRouteConfig);
@@ -228,6 +228,25 @@ class RouteAspect implements Aspect
             }
         } else {
             return $this->controllers[$className];
+        }
+    }
+
+    /**
+     * 增强send，可以根据不同协议转码发送
+     * @param $fd
+     * @param $data
+     * @return bool
+     */
+    public function autoBoostSend($fd, $data): bool
+    {
+        $clientInfo = Server::$instance->getClientInfo($fd);
+        $easyRouteConfig = $this->easyRouteConfigs[$clientInfo->getServerPort()];
+        $pack = $this->packTools[$easyRouteConfig->getPackTool()];
+        $data = $pack->pack($easyRouteConfig, $data);
+        if (Server::$instance->isEstablished($fd)) {
+            return Server::$instance->wsPush($fd, $data, $easyRouteConfig->getWsOpcode());
+        } else {
+            return Server::$instance->send($fd, $data);
         }
     }
 }
