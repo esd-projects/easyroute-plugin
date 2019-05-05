@@ -35,10 +35,9 @@ class EasyRouteConfig extends PortConfig
     protected $methodPrefix = "";
 
     /**
-     * @var string[]
+     * @var string
      */
-    protected $middleware = [];
-
+    protected $faviconPath = "";
 
     /**
      * @return string
@@ -89,22 +88,6 @@ class EasyRouteConfig extends PortConfig
     }
 
     /**
-     * @return string[]
-     */
-    public function getMiddleware(): array
-    {
-        return $this->middleware;
-    }
-
-    /**
-     * @param string[] $middleware
-     */
-    public function setMiddleware(array $middleware): void
-    {
-        $this->middleware = $middleware;
-    }
-
-    /**
      * @return string
      */
     public function getControllerNameSpace(): string
@@ -118,6 +101,22 @@ class EasyRouteConfig extends PortConfig
     public function setControllerNameSpace(string $controllerNameSpace): void
     {
         $this->controllerNameSpace = $controllerNameSpace;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFaviconPath(): string
+    {
+        return $this->faviconPath;
+    }
+
+    /**
+     * @param string $faviconPath
+     */
+    public function setFaviconPath(string $faviconPath): void
+    {
+        $this->faviconPath = $faviconPath;
     }
 
 

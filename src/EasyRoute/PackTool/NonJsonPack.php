@@ -17,6 +17,7 @@ use GoSwoole\Plugins\EasyRoute\PackException;
 class NonJsonPack implements IPack
 {
     use GetLogger;
+
     /**
      * @param $data
      * @param PortConfig $portConfig
@@ -36,7 +37,7 @@ class NonJsonPack implements IPack
      */
     public function unPack(string $data, PortConfig $portConfig): ClientData
     {
-        $value = json_decode($data);
+        $value = json_decode($data, true);
         if (empty($value)) {
             throw new PackException('json unPack 失败');
         }
@@ -60,6 +61,10 @@ class NonJsonPack implements IPack
     public function errorHandle(\Throwable $e, int $fd)
     {
         $this->error($e);
-        Server::$instance->closeFd($fd);
+        if (Server::$instance->isEstablished($fd)) {
+            Server::$instance->wsDisconnect($fd);
+        } else {
+            Server::$instance->closeFd($fd);
+        }
     }
 }

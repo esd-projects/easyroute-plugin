@@ -67,7 +67,7 @@ class LenJsonPack extends AbstractPack
     public function unPack(string $data, PortConfig $portConfig): ClientData
     {
         $this->portConfig = $portConfig;
-        $value = json_decode($this->decode($data));
+        $value = json_decode($this->decode($data),true);
         if (empty($value)) {
             throw new PackException('json unPack 失败');
         }
@@ -81,6 +81,10 @@ class LenJsonPack extends AbstractPack
     public function errorHandle(\Throwable $e, int $fd)
     {
         $this->error($e);
-        Server::$instance->closeFd($fd);
+        if (Server::$instance->isEstablished($fd)) {
+            Server::$instance->wsDisconnect($fd);
+        } else {
+            Server::$instance->closeFd($fd);
+        }
     }
 }

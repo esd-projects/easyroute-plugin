@@ -16,7 +16,7 @@ require __DIR__ . '/../vendor/autoload.php';
 //----多端口配置----
 $httpPortConfig = new EasyRouteConfig();
 $httpPortConfig->setHost("0.0.0.0");
-$httpPortConfig->setPort(8080);
+$httpPortConfig->setPort(8082);
 $httpPortConfig->setSockType(PortConfig::SWOOLE_SOCK_TCP);
 $httpPortConfig->setOpenHttpProtocol(true);
 $httpPortConfig->setControllerNameSpace("GoSwoole\Plugins\EasyRoute\ExampleClass");
@@ -27,7 +27,7 @@ $wsPortConfig = new EasyRouteConfig();
 $wsPortConfig->setHost("0.0.0.0");
 $wsPortConfig->setPort(8081);
 $wsPortConfig->setSockType(PortConfig::SWOOLE_SOCK_TCP);
-$wsPortConfig->setOpenHttpProtocol(true);
+$wsPortConfig->setOpenWebsocketProtocol(true);
 $wsPortConfig->setControllerNameSpace("GoSwoole\Plugins\EasyRoute\ExampleClass");
 $wsPortConfig->setPackTool(NonJsonPack::class);
 $wsPortConfig->setMethodPrefix("ws_");

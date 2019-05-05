@@ -13,6 +13,7 @@ use Go\Aop\Aspect;
 use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\Around;
 use GoSwoole\BaseServer\Server\AbstractServerPort;
+use GoSwoole\BaseServer\Server\Beans\Response;
 use GoSwoole\BaseServer\Server\Beans\WebSocketFrame;
 use GoSwoole\BaseServer\Server\Server;
 use GoSwoole\Plugins\EasyRoute\Controller\IController;
@@ -73,11 +74,26 @@ class RouteAspect implements Aspect
     {
         list($request, $response) = $invocation->getArguments();
         $abstractServerPort = $invocation->getThis();
-        if ($abstractServerPort instanceof AbstractServerPort) {
+        if ($abstractServerPort instanceof AbstractServerPort && $response instanceof Response) {
             $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
-            $routeTool->handleClientRequest($request);
+            try {
+                $routeTool->handleClientRequest($request);
+            } catch (\Throwable $e) {
+                $routeTool->errorHttpHandle($e, $request, $response);
+                $response->end("");
+                return;
+            }
             $controllerName = $routeTool->getControllerName();
+            if (strtolower($controllerName) == "favicon.ico") {
+                if (is_file($easyRouteConfig->getFaviconPath())) {
+                    $response->addHeader("Content-Type", "image/x-icon");
+                    $response->sendfile($easyRouteConfig->getFaviconPath());
+                } else {
+                    $response->end("");
+                }
+                return;
+            }
             $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
             $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
             $result = $controllerInstance->handle($methodName, $routeTool->getParams());
@@ -102,8 +118,18 @@ class RouteAspect implements Aspect
             $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
-            $clientData = $packTool->unPack($data, $easyRouteConfig);
-            $routeTool->handleClientData($clientData);
+            try {
+                $clientData = $packTool->unPack($data, $easyRouteConfig);
+            } catch (\Throwable $e) {
+                $packTool->errorHandle($e, $fd);
+                return;
+            }
+            try {
+                $routeTool->handleClientData($clientData);
+            } catch (\Throwable $e) {
+                $routeTool->errorHandle($e, $fd);
+                return;
+            }
             $controllerName = $routeTool->getControllerName();
             $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
             $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
@@ -130,8 +156,18 @@ class RouteAspect implements Aspect
             $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
-            $clientData = $packTool->unPack($frame->getData(), $easyRouteConfig);
-            $routeTool->handleClientData($clientData);
+            try {
+                $clientData = $packTool->unPack($frame->getData(), $easyRouteConfig);
+            } catch (\Throwable $e) {
+                $packTool->errorHandle($e, $frame->getFd());
+                return;
+            }
+            try {
+                $routeTool->handleClientData($clientData);
+            } catch (\Throwable $e) {
+                $routeTool->errorHandle($e, $frame->getFd());
+                return;
+            }
             $controllerName = $routeTool->getControllerName();
             $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
             $controllerInstance = $this->getController($easyRouteConfig, $controllerName);

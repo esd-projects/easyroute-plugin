@@ -33,7 +33,7 @@ class NormalRoute implements IRoute
     public function handleClientData(ClientData $data)
     {
         $this->clientData = $data;
-        if (empty($this->clientData->getControllerName()) && empty($this->clientData->getMethodName())) {
+        if (!empty($this->clientData->getControllerName()) && !empty($this->clientData->getMethodName())) {
             return $this->clientData;
         } else {
             throw new RouteException('route 数据缺少必要字段');
