@@ -173,7 +173,7 @@ class RouteAspect implements Aspect
             $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
             $result = $controllerInstance->handle($methodName, $routeTool->getParams());
             if ($result != null) {
-                Server::$instance->wsPush($frame->getFd(), $packTool->pack($result, $easyRouteConfig));
+                Server::$instance->wsPush($frame->getFd(), $packTool->pack($result, $easyRouteConfig), $easyRouteConfig->getWsOpcode());
             }
         }
         return;
