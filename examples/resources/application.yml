@@ -1,0 +1,9 @@
+goswoole:
+  port:
+    http:
+      name: http
+      host: 0.0.0.0
+      port: 8081
+      sock_type: 1
+      open_http_protocol: true
+      controller_name_space: GoSwoole\Plugins\EasyRoute\ExampleClass
