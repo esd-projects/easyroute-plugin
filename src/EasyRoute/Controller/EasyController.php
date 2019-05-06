@@ -38,10 +38,6 @@ abstract class EasyController implements IController
             if ($result != null) {
                 return $result;
             }
-        } catch (\Throwable $e) {
-            return $this->onExceptionHandle($e);
-        }
-        try {
             if ($params == null) {
                 if ($callMethodName == "defaultMethod") {
                     return $this->defaultMethod($methodName);
@@ -72,7 +68,6 @@ abstract class EasyController implements IController
     protected function onExceptionHandle(\Throwable $e)
     {
         $this->log->error($e);
-        return $e->getMessage();
     }
 
     /**
