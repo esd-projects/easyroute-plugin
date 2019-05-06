@@ -25,6 +25,7 @@ abstract class EasyController implements IController
      * @param $methodName
      * @param $params
      * @return mixed
+     * @throws \Throwable
      */
     public function handle(?string $methodName, ?array $params)
     {
@@ -64,10 +65,11 @@ abstract class EasyController implements IController
      * 处理异常
      * @param $e
      * @return mixed
+     * @throws \Throwable
      */
     protected function onExceptionHandle(\Throwable $e)
     {
-        $this->log->error($e);
+        throw $e;
     }
 
     /**
