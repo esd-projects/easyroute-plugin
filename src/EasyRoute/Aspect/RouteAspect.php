@@ -69,10 +69,8 @@ class RouteAspect implements Aspect
      * around onHttpRequest
      *
      * @param MethodInvocation $invocation Invocation
-     * @throws RouteException
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      * @throws \GoSwoole\BaseServer\Exception
+     * @throws \Throwable
      * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
      */
     protected function aroundHttpRequest(MethodInvocation $invocation)
@@ -81,31 +79,33 @@ class RouteAspect implements Aspect
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort && $response instanceof Response) {
             $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
-            setContextValue("EasyRouteConfig",$easyRouteConfig);
+            setContextValue("EasyRouteConfig", $easyRouteConfig);
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
+            $controllerName = $methodName = "";
             try {
                 $routeTool->handleClientRequest($request);
-            } catch (\Throwable $e) {
-                $routeTool->errorHttpHandle($e, $request, $response);
-                $response->end("");
-                return;
-            }
-            $controllerName = $routeTool->getControllerName();
-            if (strtolower($controllerName) == "favicon.ico") {
-                if (is_file($easyRouteConfig->getFaviconPath())) {
-                    $response->addHeader("Content-Type", "image/x-icon");
-                    $response->sendfile($easyRouteConfig->getFaviconPath());
-                } else {
-                    $response->end("");
+                $controllerName = $routeTool->getControllerName();
+                if (strtolower($controllerName) == "favicon.ico") {
+                    if (is_file($easyRouteConfig->getFaviconPath())) {
+                        $response->addHeader("Content-Type", "image/x-icon");
+                        $response->sendfile($easyRouteConfig->getFaviconPath());
+                    } else {
+                        $response->end("");
+                    }
+                    return;
                 }
-                return;
+                $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
+                $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
+                $result = $controllerInstance->handle($controllerName, $methodName, $routeTool->getParams());
+                $response->append($result);
+            } catch (\Throwable $e) {
+                //这里的错误会移交给IndexController处理
+                $controllerInstance = $this->getController($easyRouteConfig, $easyRouteConfig->getIndexControllerName());
+                $controllerInstance->initialization($controllerName, $methodName);
+                $response->append($controllerInstance->onExceptionHandle($e));
+                throw $e;
             }
-            $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
-            $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
-            $result = $controllerInstance->handle($methodName, $routeTool->getParams());
-            $response->append($result);
         }
-        $response->end("");
         return;
     }
 
@@ -125,28 +125,26 @@ class RouteAspect implements Aspect
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort) {
             $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
-            setContextValue("EasyRouteConfig",$easyRouteConfig);
+            setContextValue("EasyRouteConfig", $easyRouteConfig);
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
+            $controllerName = $methodName = "";
             try {
                 $clientData = $packTool->unPack($data, $easyRouteConfig);
                 setContextValue("ClientData", $clientData);
-            } catch (\Throwable $e) {
-                $packTool->errorHandle($e, $fd);
-                return;
-            }
-            try {
                 $routeTool->handleClientData($clientData);
+                $controllerName = $routeTool->getControllerName();
+                $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
+                $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
+                $result = $controllerInstance->handle($controllerName, $methodName, $routeTool->getParams());
+                if ($result != null) {
+                    Server::$instance->send($fd, $packTool->pack($result, $easyRouteConfig));
+                }
             } catch (\Throwable $e) {
-                $routeTool->errorHandle($e, $fd);
-                return;
-            }
-            $controllerName = $routeTool->getControllerName();
-            $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
-            $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
-            $result = $controllerInstance->handle($methodName, $routeTool->getParams());
-            if ($result != null) {
-                Server::$instance->send($fd, $packTool->pack($result, $easyRouteConfig));
+                //这里的错误会移交给IndexController处理
+                $controllerInstance = $this->getController($easyRouteConfig, $easyRouteConfig->getIndexControllerName());
+                $controllerInstance->initialization($controllerName, $methodName);
+                $controllerInstance->onExceptionHandle($e);
             }
         }
         return;
@@ -168,28 +166,26 @@ class RouteAspect implements Aspect
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort && $frame instanceof WebSocketFrame) {
             $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
-            setContextValue("EasyRouteConfig",$easyRouteConfig);
+            setContextValue("EasyRouteConfig", $easyRouteConfig);
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
+            $controllerName = $methodName = "";
             try {
                 $clientData = $packTool->unPack($frame->getData(), $easyRouteConfig);
                 setContextValue("ClientData", $clientData);
-            } catch (\Throwable $e) {
-                $packTool->errorHandle($e, $frame->getFd());
-                return;
-            }
-            try {
                 $routeTool->handleClientData($clientData);
+                $controllerName = $routeTool->getControllerName();
+                $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
+                $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
+                $result = $controllerInstance->handle($controllerName, $methodName, $routeTool->getParams());
+                if ($result != null) {
+                    Server::$instance->wsPush($frame->getFd(), $packTool->pack($result, $easyRouteConfig), $easyRouteConfig->getWsOpcode());
+                }
             } catch (\Throwable $e) {
-                $routeTool->errorHandle($e, $frame->getFd());
-                return;
-            }
-            $controllerName = $routeTool->getControllerName();
-            $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
-            $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
-            $result = $controllerInstance->handle($methodName, $routeTool->getParams());
-            if ($result != null) {
-                Server::$instance->wsPush($frame->getFd(), $packTool->pack($result, $easyRouteConfig), $easyRouteConfig->getWsOpcode());
+                //这里的错误会移交给IndexController处理
+                $controllerInstance = $this->getController($easyRouteConfig, $easyRouteConfig->getIndexControllerName());
+                $controllerInstance->initialization($controllerName, $methodName);
+                $controllerInstance->onExceptionHandle($e);
             }
         }
         return;
@@ -211,24 +207,24 @@ class RouteAspect implements Aspect
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort) {
             $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
-            setContextValue("EasyRouteConfig",$easyRouteConfig);
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
+            $controllerName = $methodName = "";
             try {
+                setContextValue("EasyRouteConfig", $easyRouteConfig);
                 $clientData = $packTool->unPack($data, $easyRouteConfig);
                 setContextValue("ClientData", $clientData);
-            } catch (\Throwable $e) {
-                return;
-            }
-            try {
                 $routeTool->handleClientData($clientData);
+                $controllerName = $routeTool->getControllerName();
+                $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
+                $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
+                $controllerInstance->handle($controllerName, $methodName, $routeTool->getParams());
             } catch (\Throwable $e) {
-                return;
+                //这里的错误会移交给IndexController处理
+                $controllerInstance = $this->getController($easyRouteConfig, $easyRouteConfig->getIndexControllerName());
+                $controllerInstance->initialization($controllerName, $methodName);
+                $controllerInstance->onExceptionHandle($e);
             }
-            $controllerName = $routeTool->getControllerName();
-            $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
-            $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
-            $controllerInstance->handle($methodName, $routeTool->getParams());
         }
         return;
     }

@@ -57,14 +57,4 @@ class NonJsonPack implements IPack
     {
         return;
     }
-
-    public function errorHandle(\Throwable $e, int $fd)
-    {
-        $this->error($e);
-        if (Server::$instance->isEstablished($fd)) {
-            Server::$instance->wsDisconnect($fd);
-        } else {
-            Server::$instance->closeFd($fd);
-        }
-    }
 }

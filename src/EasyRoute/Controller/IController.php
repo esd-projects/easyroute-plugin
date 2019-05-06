@@ -10,5 +10,9 @@ namespace GoSwoole\Plugins\EasyRoute\Controller;
 
 interface IController
 {
-    public function handle(?string $methodName, ?array $params);
+    public function handle(?string $controllerName, ?string $methodName, ?array $params);
+
+    public function initialization(?string $controllerName, ?string $methodName);
+
+    public function onExceptionHandle(\Throwable $e);
 }

@@ -16,12 +16,13 @@ class TestController extends EasyController
 
     /**
      * 每次请求都会调用
-     * @param $methodName
+     * @param string $controllerName
+     * @param string $methodName
      * @return mixed
      */
-    protected function initialization(string $methodName)
+    public function initialization(?string $controllerName, ?string $methodName)
     {
-        parent::initialization($methodName);
+        parent::initialization($controllerName,$methodName);
         $this->log->debug($methodName);
     }
 

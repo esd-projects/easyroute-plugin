@@ -49,12 +49,13 @@ abstract class EasyController implements IController
 
     /**
      * 调用方法
-     * @param $methodName
-     * @param $params
+     * @param string|null $controllerName
+     * @param string|null $methodName
+     * @param array|null $params
      * @return mixed
      * @throws \Throwable
      */
-    public function handle(?string $methodName, ?array $params)
+    public function handle(?string $controllerName, ?string $methodName, ?array $params)
     {
         if (!is_callable([$this, $methodName]) || $methodName == null) {
             $callMethodName = 'defaultMethod';
@@ -62,7 +63,7 @@ abstract class EasyController implements IController
             $callMethodName = $methodName;
         }
         try {
-            $result = $this->initialization($methodName);
+            $result = $this->initialization($controllerName, $methodName);
             if ($result != null) {
                 return $result;
             }
@@ -83,15 +84,16 @@ abstract class EasyController implements IController
 
     /**
      * 每次请求都会调用
-     * @param $methodName
+     * @param string $controllerName
+     * @param string $methodName
      * @return mixed
      */
-    protected function initialization(string $methodName)
+    public function initialization(?string $controllerName, ?string $methodName)
     {
-        $this->clientData = getContextValue(ClientData::class);
-        $this->easyRouteConfig = getContextValue(EasyRouteConfig::class);
-        $this->request = getContextValue(Request::class);
-        $this->response = getContextValue(Response::class);
+        $this->clientData = getDeepContextValueByClassName(ClientData::class);
+        $this->easyRouteConfig = getDeepContextValueByClassName(EasyRouteConfig::class);
+        $this->request = getDeepContextValueByClassName(Request::class);
+        $this->response = getDeepContextValueByClassName(Response::class);
     }
 
     /**
@@ -100,11 +102,11 @@ abstract class EasyController implements IController
      * @return mixed
      * @throws \Throwable
      */
-    protected function onExceptionHandle(\Throwable $e)
+    public function onExceptionHandle(\Throwable $e)
     {
-        $this->response->append($e->getMessage());
-        //如果加载了Whoops插件，需要throw异常出去，不然无法捕获
-        throw $e;
+        $this->response->setStatus(404);
+        $this->response->addHeader("Content-Type","text/html;charset=UTF-8");
+        return $e->getMessage();
     }
 
     /**

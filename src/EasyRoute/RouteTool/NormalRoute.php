@@ -97,16 +97,4 @@ class NormalRoute implements IRoute
     {
         return $this->clientData;
     }
-
-    public function errorHandle(\Throwable $e, $fd)
-    {
-        $this->error($e);
-        Server::$instance->closeFd($fd);
-    }
-
-    public function errorHttpHandle(\Throwable $e, Request $request, Response $response)
-    {
-        $this->error($e);
-        $response->end($e->getMessage());
-    }
 }

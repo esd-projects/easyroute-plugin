@@ -20,6 +20,4 @@ interface IPack
     public function pack(string $data, PortConfig $portConfig, ?string $topic = null);
 
     public function unPack(string $data, PortConfig $portConfig): ClientData;
-
-    public function errorHandle(\Throwable $e, int $fd);
 }
