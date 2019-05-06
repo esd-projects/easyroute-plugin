@@ -10,15 +10,42 @@ namespace GoSwoole\Plugins\EasyRoute\Controller;
 
 
 use DI\Annotation\Inject;
+use GoSwoole\BaseServer\Server\Beans\Request;
+use GoSwoole\BaseServer\Server\Beans\Response;
+use GoSwoole\Plugins\EasyRoute\ClientData;
+use GoSwoole\Plugins\EasyRoute\EasyRouteConfig;
+use GoSwoole\Plugins\EasyRoute\GetBoostSend;
 use Monolog\Logger;
 
 abstract class EasyController implements IController
 {
+    use GetBoostSend;
+
     /**
      * @Inject()
      * @var Logger
      */
     protected $log;
+
+    /**
+     * @var ClientData
+     */
+    protected $clientData;
+
+    /**
+     * @var EasyRouteConfig
+     */
+    protected $easyRouteConfig;
+
+    /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
+     * @var Response
+     */
+    protected $response;
 
     /**
      * 调用方法
@@ -59,7 +86,13 @@ abstract class EasyController implements IController
      * @param $methodName
      * @return mixed
      */
-    abstract protected function initialization(string $methodName);
+    protected function initialization(string $methodName)
+    {
+        $this->clientData = getContextValue(ClientData::class);
+        $this->easyRouteConfig = getContextValue(EasyRouteConfig::class);
+        $this->request = getContextValue(Request::class);
+        $this->response = getContextValue(Response::class);
+    }
 
     /**
      * 处理异常
@@ -69,6 +102,7 @@ abstract class EasyController implements IController
      */
     protected function onExceptionHandle(\Throwable $e)
     {
+        //如果加载了Whoops插件，可以这里直接throw异常出去
         throw $e;
     }
 

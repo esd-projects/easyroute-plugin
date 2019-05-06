@@ -72,6 +72,7 @@ class RouteAspect implements Aspect
      * @throws RouteException
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
+     * @throws \GoSwoole\BaseServer\Exception
      * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
      */
     protected function aroundHttpRequest(MethodInvocation $invocation)
@@ -80,6 +81,7 @@ class RouteAspect implements Aspect
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort && $response instanceof Response) {
             $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
+            setContextValue("EasyRouteConfig",$easyRouteConfig);
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
             try {
                 $routeTool->handleClientRequest($request);
@@ -114,6 +116,7 @@ class RouteAspect implements Aspect
      * @throws RouteException
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
+     * @throws \GoSwoole\BaseServer\Exception
      * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onTcpReceive(*))")
      */
     protected function aroundTcpReceive(MethodInvocation $invocation)
@@ -122,10 +125,12 @@ class RouteAspect implements Aspect
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort) {
             $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
+            setContextValue("EasyRouteConfig",$easyRouteConfig);
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
             try {
                 $clientData = $packTool->unPack($data, $easyRouteConfig);
+                setContextValue("ClientData", $clientData);
             } catch (\Throwable $e) {
                 $packTool->errorHandle($e, $fd);
                 return;
@@ -154,6 +159,7 @@ class RouteAspect implements Aspect
      * @throws RouteException
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
+     * @throws \GoSwoole\BaseServer\Exception
      * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onWsMessage(*))")
      */
     protected function aroundWsMessage(MethodInvocation $invocation)
@@ -162,10 +168,12 @@ class RouteAspect implements Aspect
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort && $frame instanceof WebSocketFrame) {
             $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
+            setContextValue("EasyRouteConfig",$easyRouteConfig);
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
             try {
                 $clientData = $packTool->unPack($frame->getData(), $easyRouteConfig);
+                setContextValue("ClientData", $clientData);
             } catch (\Throwable $e) {
                 $packTool->errorHandle($e, $frame->getFd());
                 return;
@@ -194,6 +202,7 @@ class RouteAspect implements Aspect
      * @throws RouteException
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
+     * @throws \GoSwoole\BaseServer\Exception
      * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onUdpPacket(*))")
      */
     protected function aroundUdpPacket(MethodInvocation $invocation)
@@ -202,10 +211,20 @@ class RouteAspect implements Aspect
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort) {
             $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
+            setContextValue("EasyRouteConfig",$easyRouteConfig);
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
-            $clientData = $packTool->unPack($data, $easyRouteConfig);
-            $routeTool->handleClientData($clientData);
+            try {
+                $clientData = $packTool->unPack($data, $easyRouteConfig);
+                setContextValue("ClientData", $clientData);
+            } catch (\Throwable $e) {
+                return;
+            }
+            try {
+                $routeTool->handleClientData($clientData);
+            } catch (\Throwable $e) {
+                return;
+            }
             $controllerName = $routeTool->getControllerName();
             $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
             $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
@@ -232,9 +251,9 @@ class RouteAspect implements Aspect
         if (!isset($this->controllers[$className])) {
             if (class_exists($className)) {
                 $controller = Server::$instance->getContainer()->get($className);
-                    if ($controller instanceof IController) {
-                        $this->controllers[$className] = $controller;
-                        return $controller;
+                if ($controller instanceof IController) {
+                    $this->controllers[$className] = $controller;
+                    return $controller;
                 } else {
                     throw new RouteException("类{$className}应该继承IController");
                 }
