@@ -9,13 +9,17 @@
 namespace GoSwoole\Plugins\EasyRoute\Controller;
 
 
-use GoSwoole\BaseServer\Plugins\Logger\GetLogger;
-use GoSwoole\Plugins\EasyRoute\GetHttp;
+use DI\Annotation\Inject;
+use Monolog\Logger;
 
 abstract class EasyController implements IController
 {
-    use GetLogger;
-    use GetHttp;
+    /**
+     * @Inject()
+     * @var Logger
+     */
+    protected $log;
+
     /**
      * 调用方法
      * @param $methodName
@@ -39,14 +43,14 @@ abstract class EasyController implements IController
         }
         try {
             if ($params == null) {
-                if($callMethodName=="defaultMethod"){
+                if ($callMethodName == "defaultMethod") {
                     return $this->defaultMethod($methodName);
-                }else {
-                    return call_user_func([$this,$callMethodName]);
+                } else {
+                    return call_user_func([$this, $callMethodName]);
                 }
             } else {
                 $params = array_values($params);
-                return call_user_func_array([$this,$callMethodName],$params);
+                return call_user_func_array([$this, $callMethodName], $params);
             }
         } catch (\Throwable $e) {
             return $this->onExceptionHandle($e);
@@ -67,7 +71,7 @@ abstract class EasyController implements IController
      */
     protected function onExceptionHandle(\Throwable $e)
     {
-        $this->error($e);
+        $this->log->error($e);
         return $e->getMessage();
     }
 

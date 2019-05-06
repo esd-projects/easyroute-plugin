@@ -45,6 +45,8 @@ class RouteAspect implements Aspect
     /**
      * RouteAspect constructor.
      * @param $easyRouteConfigs
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
     public function __construct($easyRouteConfigs)
     {
@@ -53,12 +55,12 @@ class RouteAspect implements Aspect
             if (!empty($easyRouteConfig->getPackTool())) {
                 if (!isset($this->packTools[$easyRouteConfig->getPackTool()])) {
                     $className = $easyRouteConfig->getPackTool();
-                    $this->packTools[$easyRouteConfig->getPackTool()] = new $className();
+                    $this->packTools[$easyRouteConfig->getPackTool()] = Server::$instance->getContainer()->get($className);
                 }
             }
             if (!isset($this->routeTools[$easyRouteConfig->getRouteTool()])) {
                 $className = $easyRouteConfig->getRouteTool();
-                $this->routeTools[$easyRouteConfig->getRouteTool()] = new $className();
+                $this->routeTools[$easyRouteConfig->getRouteTool()] = Server::$instance->getContainer()->get($className);
             }
         }
     }
@@ -67,8 +69,10 @@ class RouteAspect implements Aspect
      * around onHttpRequest
      *
      * @param MethodInvocation $invocation Invocation
-     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
      * @throws RouteException
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
      */
     protected function aroundHttpRequest(MethodInvocation $invocation)
     {
@@ -107,8 +111,10 @@ class RouteAspect implements Aspect
      * around onTcpReceive
      *
      * @param MethodInvocation $invocation Invocation
-     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onTcpReceive(*))")
      * @throws RouteException
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onTcpReceive(*))")
      */
     protected function aroundTcpReceive(MethodInvocation $invocation)
     {
@@ -145,8 +151,10 @@ class RouteAspect implements Aspect
      * around onWsMessage
      *
      * @param MethodInvocation $invocation Invocation
-     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onWsMessage(*))")
      * @throws RouteException
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onWsMessage(*))")
      */
     protected function aroundWsMessage(MethodInvocation $invocation)
     {
@@ -183,8 +191,10 @@ class RouteAspect implements Aspect
      * around onUdpPacket
      *
      * @param MethodInvocation $invocation Invocation
-     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onUdpPacket(*))")
      * @throws RouteException
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onUdpPacket(*))")
      */
     protected function aroundUdpPacket(MethodInvocation $invocation)
     {
@@ -209,6 +219,8 @@ class RouteAspect implements Aspect
      * @param $controllerName
      * @return IController
      * @throws RouteException
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
     private function getController(EasyRouteConfig $easyRouteConfig, $controllerName)
     {
@@ -219,7 +231,7 @@ class RouteAspect implements Aspect
         $className = $easyRouteConfig->getControllerNameSpace() . "\\" . $controllerName;
         if (!isset($this->controllers[$className])) {
             if (class_exists($className)) {
-                $controller = new $className;
+                $controller = Server::$instance->getContainer()->get($className);
                     if ($controller instanceof IController) {
                         $this->controllers[$className] = $controller;
                         return $controller;

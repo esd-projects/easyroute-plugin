@@ -13,6 +13,7 @@ use GoSwoole\Plugins\EasyRoute\Controller\EasyController;
 
 class TestController extends EasyController
 {
+
     /**
      * 每次请求都会调用
      * @param $methodName
@@ -20,7 +21,7 @@ class TestController extends EasyController
      */
     protected function initialization(string $methodName)
     {
-
+        $this->log->debug($methodName);
     }
 
     /**
@@ -34,11 +35,13 @@ class TestController extends EasyController
     }
 
 
-    public function http_test(){
+    public function http_test()
+    {
         return "test";
     }
 
-    public function ws_test(){
+    public function ws_test()
+    {
         return "test";
     }
 }
