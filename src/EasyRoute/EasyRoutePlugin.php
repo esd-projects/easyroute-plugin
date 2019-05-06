@@ -62,8 +62,8 @@ class EasyRoutePlugin extends AbstractPlugin
                 $easyRouteConfig->setControllerNameSpace("GoSwoole\\Controllers");
             }
             $easyRouteConfig->setName($key);
-            $easyRouteConfig->merge();
             $easyRouteConfig->buildFromConfig($value);
+            $easyRouteConfig->merge();
             $this->easyRouteConfigs[$easyRouteConfig->getPort()] = $easyRouteConfig;
         }
         //AOP注入
