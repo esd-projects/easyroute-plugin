@@ -75,7 +75,7 @@ class RouteAspect implements Aspect
         list($request, $response) = $invocation->getArguments();
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort && $response instanceof Response) {
-            $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
+            $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
             try {
                 $routeTool->handleClientRequest($request);
@@ -213,13 +213,16 @@ class RouteAspect implements Aspect
     private function getController(EasyRouteConfig $easyRouteConfig, $controllerName)
     {
         $controllerName = ucfirst($controllerName);
+        if (empty($controllerName)) {
+            $controllerName = $easyRouteConfig->getIndexControllerName();
+        }
         $className = $easyRouteConfig->getControllerNameSpace() . "\\" . $controllerName;
         if (!isset($this->controllers[$className])) {
             if (class_exists($className)) {
                 $controller = new $className;
-                if ($controller instanceof IController) {
-                    $this->controllers[$className] = $controller;
-                    return $controller;
+                    if ($controller instanceof IController) {
+                        $this->controllers[$className] = $controller;
+                        return $controller;
                 } else {
                     throw new RouteException("类{$className}应该继承IController");
                 }

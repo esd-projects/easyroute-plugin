@@ -32,6 +32,11 @@ class EasyRouteConfig extends PortConfig
     /**
      * @var string
      */
+    protected $indexControllerName = "IndexController";
+
+    /**
+     * @var string
+     */
     protected $methodPrefix = "";
 
     /**
@@ -117,6 +122,22 @@ class EasyRouteConfig extends PortConfig
     public function setFaviconPath(string $faviconPath): void
     {
         $this->faviconPath = $faviconPath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIndexControllerName(): string
+    {
+        return $this->indexControllerName;
+    }
+
+    /**
+     * @param string $indexControllerName
+     */
+    public function setIndexControllerName(string $indexControllerName): void
+    {
+        $this->indexControllerName = $indexControllerName;
     }
 
 

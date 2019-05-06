@@ -7,3 +7,4 @@ goswoole:
       sock_type: 1
       open_http_protocol: true
       controller_name_space: GoSwoole\Plugins\EasyRoute\ExampleClass
+      index_controller_name: TestController
