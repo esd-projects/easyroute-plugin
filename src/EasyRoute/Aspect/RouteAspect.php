@@ -103,7 +103,7 @@ class RouteAspect implements Aspect
             $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
             $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
             $result = $controllerInstance->handle($methodName, $routeTool->getParams());
-            $response->end($result);
+            $response->append($result);
         }
         $response->end("");
         return;

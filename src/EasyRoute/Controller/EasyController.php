@@ -102,7 +102,8 @@ abstract class EasyController implements IController
      */
     protected function onExceptionHandle(\Throwable $e)
     {
-        //如果加载了Whoops插件，可以这里直接throw异常出去
+        $this->response->append($e->getMessage());
+        //如果加载了Whoops插件，需要throw异常出去，不然无法捕获
         throw $e;
     }
 
