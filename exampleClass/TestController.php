@@ -21,6 +21,7 @@ class TestController extends EasyController
      */
     protected function initialization(string $methodName)
     {
+        parent::initialization($methodName);
         $this->log->debug($methodName);
     }
 
