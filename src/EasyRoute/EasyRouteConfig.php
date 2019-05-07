@@ -20,6 +20,11 @@ class EasyRouteConfig extends PortConfig
     protected $controllerNameSpace = "";
 
     /**
+     * @var bool
+     */
+    protected $autoJson = true;
+
+    /**
      * @var string
      */
     protected $packTool = LenJsonPack::class;
@@ -138,6 +143,22 @@ class EasyRouteConfig extends PortConfig
     public function setIndexControllerName(string $indexControllerName): void
     {
         $this->indexControllerName = $indexControllerName;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAutoJson(): bool
+    {
+        return $this->autoJson;
+    }
+
+    /**
+     * @param bool $autoJson
+     */
+    public function setAutoJson(bool $autoJson): void
+    {
+        $this->autoJson = $autoJson;
     }
 
 

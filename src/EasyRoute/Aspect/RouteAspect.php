@@ -97,6 +97,10 @@ class RouteAspect implements Aspect
                 $methodName = $easyRouteConfig->getMethodPrefix() . $routeTool->getMethodName();
                 $controllerInstance = $this->getController($easyRouteConfig, $controllerName);
                 $result = $controllerInstance->handle($controllerName, $methodName, $routeTool->getParams());
+                if($easyRouteConfig->isAutoJson()&&(is_array($result)||is_object($result))){
+                    $result = json_encode($result,JSON_UNESCAPED_UNICODE);
+                    $response->addHeader("Content-Type", "application/json");
+                }
                 $response->append($result);
             } catch (\Throwable $e) {
                 //这里的错误会移交给IndexController处理
