@@ -10,42 +10,21 @@ namespace GoSwoole\Plugins\EasyRoute\Controller;
 
 
 use DI\Annotation\Inject;
-use GoSwoole\BaseServer\Server\Beans\Request;
-use GoSwoole\BaseServer\Server\Beans\Response;
-use GoSwoole\Plugins\EasyRoute\ClientData;
-use GoSwoole\Plugins\EasyRoute\EasyRouteConfig;
 use GoSwoole\Plugins\EasyRoute\GetBoostSend;
+use GoSwoole\Plugins\EasyRoute\GetClientData;
+use GoSwoole\Plugins\EasyRoute\GetHttp;
 use Monolog\Logger;
 
 abstract class EasyController implements IController
 {
     use GetBoostSend;
-
+    use GetHttp;
+    use GetClientData;
     /**
      * @Inject()
      * @var Logger
      */
     protected $log;
-
-    /**
-     * @var ClientData
-     */
-    protected $clientData;
-
-    /**
-     * @var EasyRouteConfig
-     */
-    protected $easyRouteConfig;
-
-    /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * @var Response
-     */
-    protected $response;
 
     /**
      * 调用方法
@@ -90,10 +69,7 @@ abstract class EasyController implements IController
      */
     public function initialization(?string $controllerName, ?string $methodName)
     {
-        $this->clientData = getDeepContextValueByClassName(ClientData::class);
-        $this->easyRouteConfig = getDeepContextValueByClassName(EasyRouteConfig::class);
-        $this->request = getDeepContextValueByClassName(Request::class);
-        $this->response = getDeepContextValueByClassName(Response::class);
+
     }
 
     /**
@@ -104,8 +80,8 @@ abstract class EasyController implements IController
      */
     public function onExceptionHandle(\Throwable $e)
     {
-        $this->response->setStatus(404);
-        $this->response->addHeader("Content-Type","text/html;charset=UTF-8");
+        $this->getResponse()->setStatus(404);
+        $this->getResponse()->addHeader("Content-Type", "text/html;charset=UTF-8");
         return $e->getMessage();
     }
 
