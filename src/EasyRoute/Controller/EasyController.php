@@ -10,16 +10,22 @@ namespace GoSwoole\Plugins\EasyRoute\Controller;
 
 
 use DI\Annotation\Inject;
-use GoSwoole\Plugins\EasyRoute\GetBoostSend;
-use GoSwoole\Plugins\EasyRoute\GetClientData;
-use GoSwoole\Plugins\EasyRoute\GetHttp;
+use GoSwoole\BaseServer\Server\Beans\Request;
+use GoSwoole\BaseServer\Server\Beans\Response;
 use Monolog\Logger;
 
 abstract class EasyController implements IController
 {
-    use GetBoostSend;
-    use GetHttp;
-    use GetClientData;
+    /**
+     * @Inject()
+     * @var Request
+     */
+    protected $request;
+    /**
+     * @Inject()
+     * @var Response
+     */
+    protected $response;
     /**
      * @Inject()
      * @var Logger
@@ -80,8 +86,8 @@ abstract class EasyController implements IController
      */
     public function onExceptionHandle(\Throwable $e)
     {
-        $this->getResponse()->setStatus(404);
-        $this->getResponse()->addHeader("Content-Type", "text/html;charset=UTF-8");
+        $this->response->setStatus(404);
+        $this->response->addHeader("Content-Type", "text/html;charset=UTF-8");
         return $e->getMessage();
     }
 
