@@ -49,7 +49,10 @@ class EasyRoutePlugin extends AbstractPlugin
      * 在服务启动前
      * @param Context $context
      * @return mixed
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      * @throws \GoSwoole\BaseServer\Exception
+     * @throws \GoSwoole\BaseServer\Server\Exception\ConfigException
      * @throws \ReflectionException
      */
     public function beforeServerStart(Context $context)
@@ -75,6 +78,7 @@ class EasyRoutePlugin extends AbstractPlugin
         } else {
             $this->warn("没有添加AOP插件，EasyRoute无法自动工作，需要手动配置入口");
         }
+        $this->setToDIContainer(ClientData::class, new ClientDataProxy());
     }
 
     /**
