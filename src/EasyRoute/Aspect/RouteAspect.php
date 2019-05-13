@@ -6,21 +6,21 @@
  * Time: 14:54
  */
 
-namespace GoSwoole\Plugins\EasyRoute\Aspect;
+namespace ESD\Plugins\EasyRoute\Aspect;
 
 
 use Go\Aop\Aspect;
 use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\Around;
-use GoSwoole\BaseServer\Server\AbstractServerPort;
-use GoSwoole\BaseServer\Server\Beans\Response;
-use GoSwoole\BaseServer\Server\Beans\WebSocketFrame;
-use GoSwoole\BaseServer\Server\Server;
-use GoSwoole\Plugins\EasyRoute\Controller\IController;
-use GoSwoole\Plugins\EasyRoute\EasyRouteConfig;
-use GoSwoole\Plugins\EasyRoute\PackTool\IPack;
-use GoSwoole\Plugins\EasyRoute\RouteException;
-use GoSwoole\Plugins\EasyRoute\RouteTool\IRoute;
+use ESD\BaseServer\Server\AbstractServerPort;
+use ESD\BaseServer\Server\Beans\Response;
+use ESD\BaseServer\Server\Beans\WebSocketFrame;
+use ESD\BaseServer\Server\Server;
+use ESD\Plugins\EasyRoute\Controller\IController;
+use ESD\Plugins\EasyRoute\EasyRouteConfig;
+use ESD\Plugins\EasyRoute\PackTool\IPack;
+use ESD\Plugins\EasyRoute\RouteException;
+use ESD\Plugins\EasyRoute\RouteTool\IRoute;
 
 class RouteAspect implements Aspect
 {
@@ -69,9 +69,9 @@ class RouteAspect implements Aspect
      * around onHttpRequest
      *
      * @param MethodInvocation $invocation Invocation
-     * @throws \GoSwoole\BaseServer\Exception
+     * @throws \ESD\BaseServer\Exception
      * @throws \Throwable
-     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
+     * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
      */
     protected function aroundHttpRequest(MethodInvocation $invocation)
     {
@@ -120,8 +120,8 @@ class RouteAspect implements Aspect
      * @throws RouteException
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
-     * @throws \GoSwoole\BaseServer\Exception
-     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onTcpReceive(*))")
+     * @throws \ESD\BaseServer\Exception
+     * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onTcpReceive(*))")
      */
     protected function aroundTcpReceive(MethodInvocation $invocation)
     {
@@ -161,8 +161,8 @@ class RouteAspect implements Aspect
      * @throws RouteException
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
-     * @throws \GoSwoole\BaseServer\Exception
-     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onWsMessage(*))")
+     * @throws \ESD\BaseServer\Exception
+     * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onWsMessage(*))")
      */
     protected function aroundWsMessage(MethodInvocation $invocation)
     {
@@ -202,8 +202,8 @@ class RouteAspect implements Aspect
      * @throws RouteException
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
-     * @throws \GoSwoole\BaseServer\Exception
-     * @Around("within(GoSwoole\BaseServer\Server\IServerPort+) && execution(public **->onUdpPacket(*))")
+     * @throws \ESD\BaseServer\Exception
+     * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onUdpPacket(*))")
      */
     protected function aroundUdpPacket(MethodInvocation $invocation)
     {

@@ -6,7 +6,7 @@
  * Time: 13:42
  */
 
-namespace GoSwoole\Plugins\EasyRoute;
+namespace ESD\Plugins\EasyRoute;
 
 
 class ClientData

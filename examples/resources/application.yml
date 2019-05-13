@@ -1,4 +1,4 @@
-goswoole:
+esd:
   port:
     http:
       name: http
@@ -6,5 +6,5 @@ goswoole:
       port: 8081
       sock_type: 1
       open_http_protocol: true
-      controller_name_space: GoSwoole\Plugins\EasyRoute\ExampleClass
+      controller_name_space: ESD\Plugins\EasyRoute\ExampleClass
       index_controller_name: TestController

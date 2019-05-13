@@ -6,7 +6,7 @@
  * Time: 15:44
  */
 
-namespace GoSwoole\Plugins\EasyRoute;
+namespace ESD\Plugins\EasyRoute;
 
 
 trait GetClientData

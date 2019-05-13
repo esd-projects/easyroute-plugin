@@ -1,10 +1,10 @@
 <?php
 
-namespace GoSwoole\Plugins\EasyRoute\RouteTool;
+namespace ESD\Plugins\EasyRoute\RouteTool;
 
-use GoSwoole\BaseServer\Server\Beans\Request;
-use GoSwoole\BaseServer\Server\Beans\Response;
-use GoSwoole\Plugins\EasyRoute\ClientData;
+use ESD\BaseServer\Server\Beans\Request;
+use ESD\BaseServer\Server\Beans\Response;
+use ESD\Plugins\EasyRoute\ClientData;
 
 /**
  * Created by PhpStorm.

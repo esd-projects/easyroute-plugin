@@ -6,11 +6,11 @@
  * Time: 15:44
  */
 
-namespace GoSwoole\Plugins\EasyRoute;
+namespace ESD\Plugins\EasyRoute;
 
 
-use GoSwoole\BaseServer\Server\Beans\Request;
-use GoSwoole\BaseServer\Server\Beans\Response;
+use ESD\BaseServer\Server\Beans\Request;
+use ESD\BaseServer\Server\Beans\Response;
 
 trait GetHttp
 {

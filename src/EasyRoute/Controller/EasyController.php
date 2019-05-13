@@ -6,12 +6,12 @@
  * Time: 15:30
  */
 
-namespace GoSwoole\Plugins\EasyRoute\Controller;
+namespace ESD\Plugins\EasyRoute\Controller;
 
 
 use DI\Annotation\Inject;
-use GoSwoole\BaseServer\Server\Beans\Request;
-use GoSwoole\BaseServer\Server\Beans\Response;
+use ESD\BaseServer\Server\Beans\Request;
+use ESD\BaseServer\Server\Beans\Response;
 use Monolog\Logger;
 
 abstract class EasyController implements IController

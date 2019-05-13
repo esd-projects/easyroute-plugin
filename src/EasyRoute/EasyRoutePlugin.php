@@ -6,16 +6,16 @@
  * Time: 14:42
  */
 
-namespace GoSwoole\Plugins\EasyRoute;
+namespace ESD\Plugins\EasyRoute;
 
 
-use GoSwoole\BaseServer\Plugins\Logger\GetLogger;
-use GoSwoole\BaseServer\Server\Config\PortConfig;
-use GoSwoole\BaseServer\Server\Context;
-use GoSwoole\BaseServer\Server\Plugin\AbstractPlugin;
-use GoSwoole\BaseServer\Server\Server;
-use GoSwoole\Plugins\Aop\AopPlugin;
-use GoSwoole\Plugins\EasyRoute\Aspect\RouteAspect;
+use ESD\BaseServer\Plugins\Logger\GetLogger;
+use ESD\BaseServer\Server\Config\PortConfig;
+use ESD\BaseServer\Server\Context;
+use ESD\BaseServer\Server\Plugin\AbstractPlugin;
+use ESD\BaseServer\Server\Server;
+use ESD\Plugins\Aop\AopPlugin;
+use ESD\Plugins\EasyRoute\Aspect\RouteAspect;
 
 class EasyRoutePlugin extends AbstractPlugin
 {
@@ -51,8 +51,8 @@ class EasyRoutePlugin extends AbstractPlugin
      * @return mixed
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
-     * @throws \GoSwoole\BaseServer\Exception
-     * @throws \GoSwoole\BaseServer\Server\Exception\ConfigException
+     * @throws \ESD\BaseServer\Exception
+     * @throws \ESD\BaseServer\Server\Exception\ConfigException
      * @throws \ReflectionException
      */
     public function beforeServerStart(Context $context)
@@ -62,7 +62,7 @@ class EasyRoutePlugin extends AbstractPlugin
         foreach ($configs as $key => $value) {
             $easyRouteConfig = new EasyRouteConfig();
             if (empty($easyRouteConfig->getControllerNameSpace())) {
-                $easyRouteConfig->setControllerNameSpace("GoSwoole\\Controllers");
+                $easyRouteConfig->setControllerNameSpace("ESD\\Controllers");
             }
             $easyRouteConfig->setName($key);
             $easyRouteConfig->buildFromConfig($value);
@@ -72,7 +72,7 @@ class EasyRoutePlugin extends AbstractPlugin
         //AOP注入
         $aopPlugin = $context->getServer()->getPlugManager()->getPlug(AopPlugin::class);
         if ($aopPlugin instanceof AopPlugin) {
-            $aopPlugin->getAopConfig()->addIncludePath($serverConfig->getVendorDir() . "/go-swoole/base-server");
+            $aopPlugin->getAopConfig()->addIncludePath($serverConfig->getVendorDir() . "/esd/base-server");
             $this->routeAspect = new RouteAspect($this->easyRouteConfigs);
             $aopPlugin->getAopConfig()->addAspect($this->routeAspect);
         } else {

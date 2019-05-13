@@ -1,9 +1,9 @@
 <?php
 
-namespace GoSwoole\Plugins\EasyRoute\PackTool;
+namespace ESD\Plugins\EasyRoute\PackTool;
 
-use GoSwoole\BaseServer\Server\Config\PortConfig;
-use GoSwoole\Plugins\EasyRoute\ClientData;
+use ESD\BaseServer\Server\Config\PortConfig;
+use ESD\Plugins\EasyRoute\ClientData;
 
 /**
  * Created by PhpStorm.

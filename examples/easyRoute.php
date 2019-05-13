@@ -1,14 +1,14 @@
 <?php
 
-use GoSwoole\BaseServer\ExampleClass\Server\DefaultServer;
-use GoSwoole\BaseServer\Server\Config\PortConfig;
-use GoSwoole\BaseServer\Server\Config\ServerConfig;
-use GoSwoole\Plugins\Aop\AopConfig;
-use GoSwoole\Plugins\Aop\AopPlugin;
-use GoSwoole\Plugins\EasyRoute\EasyRouteConfig;
-use GoSwoole\Plugins\EasyRoute\EasyRoutePlugin;
-use GoSwoole\Plugins\EasyRoute\PackTool\LenJsonPack;
-use GoSwoole\Plugins\EasyRoute\PackTool\NonJsonPack;
+use ESD\BaseServer\ExampleClass\Server\DefaultServer;
+use ESD\BaseServer\Server\Config\PortConfig;
+use ESD\BaseServer\Server\Config\ServerConfig;
+use ESD\Plugins\Aop\AopConfig;
+use ESD\Plugins\Aop\AopPlugin;
+use ESD\Plugins\EasyRoute\EasyRouteConfig;
+use ESD\Plugins\EasyRoute\EasyRoutePlugin;
+use ESD\Plugins\EasyRoute\PackTool\LenJsonPack;
+use ESD\Plugins\EasyRoute\PackTool\NonJsonPack;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -19,7 +19,7 @@ $httpPortConfig->setHost("0.0.0.0");
 $httpPortConfig->setPort(8082);
 $httpPortConfig->setSockType(PortConfig::SWOOLE_SOCK_TCP);
 $httpPortConfig->setOpenHttpProtocol(true);
-$httpPortConfig->setControllerNameSpace("GoSwoole\Plugins\EasyRoute\ExampleClass");
+$httpPortConfig->setControllerNameSpace("ESD\Plugins\EasyRoute\ExampleClass");
 $httpPortConfig->setPackTool(LenJsonPack::class);
 $httpPortConfig->setMethodPrefix("http_");
 
@@ -28,7 +28,7 @@ $wsPortConfig->setHost("0.0.0.0");
 $wsPortConfig->setPort(8081);
 $wsPortConfig->setSockType(PortConfig::SWOOLE_SOCK_TCP);
 $wsPortConfig->setOpenWebsocketProtocol(true);
-$wsPortConfig->setControllerNameSpace("GoSwoole\Plugins\EasyRoute\ExampleClass");
+$wsPortConfig->setControllerNameSpace("ESD\Plugins\EasyRoute\ExampleClass");
 $wsPortConfig->setPackTool(NonJsonPack::class);
 $wsPortConfig->setMethodPrefix("ws_");
 

@@ -6,7 +6,7 @@
  * Time: 15:12
  */
 
-namespace GoSwoole\Plugins\EasyRoute\Controller;
+namespace ESD\Plugins\EasyRoute\Controller;
 
 interface IController
 {

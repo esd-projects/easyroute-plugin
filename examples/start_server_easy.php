@@ -1,9 +1,9 @@
 <?php
 
-use GoSwoole\BaseServer\ExampleClass\Server\DefaultServer;
-use GoSwoole\Plugins\Aop\AopConfig;
-use GoSwoole\Plugins\Aop\AopPlugin;
-use GoSwoole\Plugins\EasyRoute\EasyRoutePlugin;
+use ESD\BaseServer\ExampleClass\Server\DefaultServer;
+use ESD\Plugins\Aop\AopConfig;
+use ESD\Plugins\Aop\AopPlugin;
+use ESD\Plugins\EasyRoute\EasyRoutePlugin;
 
 require __DIR__ . '/../vendor/autoload.php';
 

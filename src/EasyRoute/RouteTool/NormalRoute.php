@@ -6,15 +6,15 @@
  * Time: 下午3:11
  */
 
-namespace GoSwoole\Plugins\EasyRoute\RouteTool;
+namespace ESD\Plugins\EasyRoute\RouteTool;
 
 
-use GoSwoole\BaseServer\Plugins\Logger\GetLogger;
-use GoSwoole\BaseServer\Server\Beans\Request;
-use GoSwoole\BaseServer\Server\Beans\Response;
-use GoSwoole\BaseServer\Server\Server;
-use GoSwoole\Plugins\EasyRoute\ClientData;
-use GoSwoole\Plugins\EasyRoute\RouteException;
+use ESD\BaseServer\Plugins\Logger\GetLogger;
+use ESD\BaseServer\Server\Beans\Request;
+use ESD\BaseServer\Server\Beans\Response;
+use ESD\BaseServer\Server\Server;
+use ESD\Plugins\EasyRoute\ClientData;
+use ESD\Plugins\EasyRoute\RouteException;
 
 class NormalRoute implements IRoute
 {

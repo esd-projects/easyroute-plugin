@@ -6,18 +6,18 @@
  * Time: 下午2:43
  */
 
-namespace GoSwoole\Plugins\EasyRoute\PackTool;
+namespace ESD\Plugins\EasyRoute\PackTool;
 
-use GoSwoole\BaseServer\Plugins\Logger\GetLogger;
-use GoSwoole\BaseServer\Server\Config\PortConfig;
-use GoSwoole\BaseServer\Server\Server;
-use GoSwoole\Plugins\EasyRoute\ClientData;
-use GoSwoole\Plugins\EasyRoute\PackException;
+use ESD\BaseServer\Plugins\Logger\GetLogger;
+use ESD\BaseServer\Server\Config\PortConfig;
+use ESD\BaseServer\Server\Server;
+use ESD\Plugins\EasyRoute\ClientData;
+use ESD\Plugins\EasyRoute\PackException;
 
 /**
  * 不支持package_length_offset
  * Class LenJsonPack
- * @package GoSwoole\Plugins\EasyRoute\PackTool
+ * @package ESD\Plugins\EasyRoute\PackTool
  */
 class LenJsonPack extends AbstractPack
 {

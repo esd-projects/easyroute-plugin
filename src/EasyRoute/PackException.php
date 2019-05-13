@@ -6,10 +6,10 @@
  * Time: 11:53
  */
 
-namespace GoSwoole\Plugins\EasyRoute;
+namespace ESD\Plugins\EasyRoute;
 
 
-use GoSwoole\BaseServer\Exception;
+use ESD\BaseServer\Exception;
 
 class PackException extends Exception
 {

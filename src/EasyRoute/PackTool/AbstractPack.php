@@ -6,11 +6,11 @@
  * Time: 14:17
  */
 
-namespace GoSwoole\Plugins\EasyRoute\PackTool;
+namespace ESD\Plugins\EasyRoute\PackTool;
 
 
-use GoSwoole\BaseServer\Server\Config\PortConfig;
-use GoSwoole\Plugins\EasyRoute\PackException;
+use ESD\BaseServer\Server\Config\PortConfig;
+use ESD\Plugins\EasyRoute\PackException;
 
 abstract class AbstractPack implements IPack
 {

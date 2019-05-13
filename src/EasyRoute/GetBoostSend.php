@@ -6,10 +6,10 @@
  * Time: 18:25
  */
 
-namespace GoSwoole\Plugins\EasyRoute;
+namespace ESD\Plugins\EasyRoute;
 
 
-use GoSwoole\BaseServer\Server\Server;
+use ESD\BaseServer\Server\Server;
 
 trait GetBoostSend
 {

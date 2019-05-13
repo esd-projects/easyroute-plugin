@@ -6,11 +6,11 @@
  * Time: 15:16
  */
 
-namespace GoSwoole\Plugins\EasyRoute;
+namespace ESD\Plugins\EasyRoute;
 
-use GoSwoole\BaseServer\Server\Config\PortConfig;
-use GoSwoole\Plugins\EasyRoute\PackTool\LenJsonPack;
-use GoSwoole\Plugins\EasyRoute\RouteTool\NormalRoute;
+use ESD\BaseServer\Server\Config\PortConfig;
+use ESD\Plugins\EasyRoute\PackTool\LenJsonPack;
+use ESD\Plugins\EasyRoute\RouteTool\NormalRoute;
 
 class EasyRouteConfig extends PortConfig
 {
