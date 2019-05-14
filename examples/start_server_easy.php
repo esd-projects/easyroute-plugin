@@ -10,7 +10,7 @@ require __DIR__ . '/../vendor/autoload.php';
 define("ROOT_DIR", __DIR__ . "/..");
 define("RES_DIR", __DIR__ . "/resources");
 $server = new DefaultServer();
-$server->getPlugManager()->addPlug(new AopPlugin(new AopConfig()));
+$server->getPlugManager()->addPlug(new AopPlugin());
 $server->getPlugManager()->addPlug(new EasyRoutePlugin());
 //配置
 $server->configure();

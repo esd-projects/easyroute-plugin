@@ -16,8 +16,8 @@ class TestController extends EasyController
 
     /**
      * 每次请求都会调用
-     * @param string $controllerName
-     * @param string $methodName
+     * @param string|null $controllerName
+     * @param string|null $methodName
      * @return mixed
      */
     public function initialization(?string $controllerName, ?string $methodName)

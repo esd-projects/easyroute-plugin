@@ -14,6 +14,7 @@ use ESD\BaseServer\Server\Config\PortConfig;
 use ESD\BaseServer\Server\Context;
 use ESD\BaseServer\Server\Plugin\AbstractPlugin;
 use ESD\BaseServer\Server\Server;
+use ESD\Plugins\Aop\AopConfig;
 use ESD\Plugins\Aop\AopPlugin;
 use ESD\Plugins\EasyRoute\Aspect\RouteAspect;
 
@@ -46,18 +47,16 @@ class EasyRoutePlugin extends AbstractPlugin
     }
 
     /**
-     * 在服务启动前
      * @param Context $context
-     * @return mixed
+     * @return mixed|void
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      * @throws \ESD\BaseServer\Exception
-     * @throws \ESD\BaseServer\Server\Exception\ConfigException
      * @throws \ReflectionException
      */
-    public function beforeServerStart(Context $context)
+    public function init(Context $context)
     {
-        $serverConfig = $context->getServer()->getServerConfig();
+        parent::init($context);
         $configs = Server::$instance->getConfigContext()->get(PortConfig::key);
         foreach ($configs as $key => $value) {
             $easyRouteConfig = new EasyRouteConfig();
@@ -69,13 +68,22 @@ class EasyRoutePlugin extends AbstractPlugin
             $easyRouteConfig->merge();
             $this->easyRouteConfigs[$easyRouteConfig->getPort()] = $easyRouteConfig;
         }
-        //AOP注入
+        $serverConfig = $context->getServer()->getServerConfig();
+        $aopConfig = Server::$instance->getContainer()->get(AopConfig::class);
+        $aopConfig->addIncludePath($serverConfig->getVendorDir() . "/esd/base-server");
+        $this->routeAspect = new RouteAspect($this->easyRouteConfigs);
+        $aopConfig->addAspect($this->routeAspect);
+    }
+
+    /**
+     * 在服务启动前
+     * @param Context $context
+     * @return mixed
+     */
+    public function beforeServerStart(Context $context)
+    {
         $aopPlugin = $context->getServer()->getPlugManager()->getPlug(AopPlugin::class);
-        if ($aopPlugin instanceof AopPlugin) {
-            $aopPlugin->getAopConfig()->addIncludePath($serverConfig->getVendorDir() . "/esd/base-server");
-            $this->routeAspect = new RouteAspect($this->easyRouteConfigs);
-            $aopPlugin->getAopConfig()->addAspect($this->routeAspect);
-        } else {
+        if ($aopPlugin == null) {
             $this->warn("没有添加AOP插件，EasyRoute无法自动工作，需要手动配置入口");
         }
         $this->setToDIContainer(ClientData::class, new ClientDataProxy());
