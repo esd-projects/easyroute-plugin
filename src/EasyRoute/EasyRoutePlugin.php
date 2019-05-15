@@ -131,7 +131,11 @@ class EasyRoutePlugin extends AbstractPlugin
                 if ($requestMapping instanceof RequestMapping) {
                     $requestMapping->value = trim($requestMapping->value, "/");
                     if (!empty($requestMapping->value)) {
-                        $route .= "/" . $requestMapping->value;
+                        if (empty($restController->value)) {
+                            $route .= $requestMapping->value;
+                        } else {
+                            $route .= "/" . $requestMapping->value;
+                        }
                     }
                     foreach ($requestMapping->method as $method) {
                         Server::$instance->getLog()->debug("Mapping $method $route to $reflectionClass->name::$reflectionMethod->name");
