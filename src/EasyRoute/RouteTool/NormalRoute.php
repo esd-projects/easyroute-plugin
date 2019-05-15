@@ -12,8 +12,8 @@ namespace ESD\Plugins\EasyRoute\RouteTool;
 use ESD\BaseServer\Plugins\Logger\GetLogger;
 use ESD\BaseServer\Server\Beans\Request;
 use ESD\BaseServer\Server\Beans\Response;
-use ESD\BaseServer\Server\Server;
 use ESD\Plugins\EasyRoute\ClientData;
+use ESD\Plugins\EasyRoute\EasyRouteConfig;
 use ESD\Plugins\EasyRoute\RouteException;
 
 class NormalRoute implements IRoute
@@ -26,40 +26,66 @@ class NormalRoute implements IRoute
 
     /**
      * 设置反序列化后的数据 Object
-     * @param $data
-     * @return ClientData
+     * @param ClientData $data
+     * @param EasyRouteConfig $easyRouteConfig
+     * @return bool
      * @throws RouteException
      */
-    public function handleClientData(ClientData $data)
+    public function handleClientData(ClientData $data, EasyRouteConfig $easyRouteConfig): bool
     {
         $this->clientData = $data;
         if (!empty($this->clientData->getControllerName()) && !empty($this->clientData->getMethodName())) {
-            return $this->clientData;
+            return true;
         } else {
             throw new RouteException('route 数据缺少必要字段');
         }
-
+        return true;
     }
 
     /**
      * 处理http request
-     * @param $request
+     * @param Request $request
+     * @param Response $response
+     * @param EasyRouteConfig $easyRouteConfig
+     * @return bool
      */
-    public function handleClientRequest(Request $request)
+    public function handleClientRequest(Request $request, Response $response, EasyRouteConfig $easyRouteConfig): bool
     {
         $this->clientData = new ClientData();
         $this->clientData->setPath($request->getServer(Request::SERVER_PATH_INFO));
         $route = explode('/', $this->clientData->getPath());
         $count = count($route);
         if ($count == 2) {
-            $this->clientData->setControllerName($route[$count - 1] ?? null);
-            $this->clientData->setMethodName(null);
-            return;
+            $controllerName = $route[$count - 1] ?? null;
+            $methodName = null;
+        }else {
+            $methodName = $route[$count - 1] ?? null;
+            unset($route[$count - 1]);
+            unset($route[0]);
+            $controllerName = implode("\\", $route);
         }
-        $this->clientData->setMethodName($route[$count - 1] ?? null);
-        unset($route[$count - 1]);
-        unset($route[0]);
-        $this->clientData->setControllerName(implode("\\", $route));
+
+        if (strtolower($controllerName) == "favicon.ico") {
+            if (is_file($easyRouteConfig->getFaviconPath())) {
+                $response->addHeader("Content-Type", "image/x-icon");
+                $response->sendfile($easyRouteConfig->getFaviconPath());
+            } else {
+                $response->end("");
+            }
+            return false;
+        }
+
+        if ($methodName != null) {
+            $methodName = $easyRouteConfig->getMethodPrefix() . $methodName;
+        }
+        $this->clientData->setMethodName($methodName);
+        $controllerName = ucfirst($controllerName);
+        if (empty($controllerName)) {
+            $controllerName = $easyRouteConfig->getIndexControllerName();
+        }
+        $className = $easyRouteConfig->getControllerNameSpace() . "\\" . $controllerName;
+        $this->clientData->setControllerName($className);
+        return true;
     }
 
     /**

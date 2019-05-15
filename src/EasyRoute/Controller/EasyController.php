@@ -13,6 +13,7 @@ use DI\Annotation\Inject;
 use ESD\BaseServer\Server\Beans\Request;
 use ESD\BaseServer\Server\Beans\Response;
 use Monolog\Logger;
+use ReflectionFunction;
 
 abstract class EasyController implements IController
 {
@@ -96,5 +97,5 @@ abstract class EasyController implements IController
      * @param $methodName
      * @return mixed
      */
-    abstract protected function defaultMethod(string $methodName);
+    abstract protected function defaultMethod(?string $methodName);
 }

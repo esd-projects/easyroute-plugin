@@ -5,6 +5,7 @@ namespace ESD\Plugins\EasyRoute\RouteTool;
 use ESD\BaseServer\Server\Beans\Request;
 use ESD\BaseServer\Server\Beans\Response;
 use ESD\Plugins\EasyRoute\ClientData;
+use ESD\Plugins\EasyRoute\EasyRouteConfig;
 
 /**
  * Created by PhpStorm.
@@ -14,9 +15,9 @@ use ESD\Plugins\EasyRoute\ClientData;
  */
 interface IRoute
 {
-    public function handleClientData(ClientData $data);
+    public function handleClientData(ClientData $data, EasyRouteConfig $easyRouteConfig): bool;
 
-    public function handleClientRequest(Request $request);
+    public function handleClientRequest(Request $request, Response $response, EasyRouteConfig $easyRouteConfig): bool;
 
     public function getControllerName();
 

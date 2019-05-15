@@ -27,7 +27,7 @@ class ClientData
     protected $path;
 
     /**
-     * @var string
+     * @var array
      */
     protected $params;
 
@@ -85,17 +85,17 @@ class ClientData
     }
 
     /**
-     * @return string|null
+     * @return array|null
      */
-    public function getParams(): ?string
+    public function getParams(): ?array
     {
         return $this->params;
     }
 
     /**
-     * @param string $params
+     * @param array|null $params
      */
-    public function setParams(?string $params): void
+    public function setParams(?array $params): void
     {
         $this->params = $params;
     }

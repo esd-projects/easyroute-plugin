@@ -8,3 +8,6 @@ esd:
       open_http_protocol: true
       controller_name_space: ESD\Plugins\EasyRoute\ExampleClass
       index_controller_name: TestController
+scan:
+  include_paths:
+    examples: /mnt/c/Users/administrato/PhpstormProjects/easyroute/exampleClass

@@ -10,7 +10,7 @@ namespace ESD\Plugins\EasyRoute;
 
 use ESD\BaseServer\Server\Config\PortConfig;
 use ESD\Plugins\EasyRoute\PackTool\LenJsonPack;
-use ESD\Plugins\EasyRoute\RouteTool\NormalRoute;
+use ESD\Plugins\EasyRoute\RouteTool\AnnotationRoute;
 
 class EasyRouteConfig extends PortConfig
 {
@@ -32,7 +32,7 @@ class EasyRouteConfig extends PortConfig
     /**
      * @var string
      */
-    protected $routeTool = NormalRoute::class;
+    protected $routeTool = AnnotationRoute::class;
 
     /**
      * @var string
