@@ -120,7 +120,7 @@ class ClientData
      */
     public function getPath(): string
     {
-        return $this->path;
+        return "/" . trim($this->path, "/");
     }
 
     /**

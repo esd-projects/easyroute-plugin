@@ -18,7 +18,7 @@ use ESD\Plugins\EasyRoute\Annotation\RestController;
 use ESD\Plugins\EasyRoute\Controller\EasyController;
 
 /**
- * @RestController()
+ * @RestController("test")
  * Class TestController
  * @package ESD\Plugins\EasyRoute
  */
@@ -26,7 +26,7 @@ class AnnRestController extends EasyController
 {
     /**
      * get请求
-     * @GetMapping()
+     * @GetMapping("/")
      * @return string
      */
     public function hello()
