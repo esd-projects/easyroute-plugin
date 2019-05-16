@@ -10,7 +10,6 @@ namespace ESD\Plugins\EasyRoute\PackTool;
 
 use ESD\BaseServer\Plugins\Logger\GetLogger;
 use ESD\BaseServer\Server\Config\PortConfig;
-use ESD\BaseServer\Server\Server;
 use ESD\Plugins\EasyRoute\ClientData;
 use ESD\Plugins\EasyRoute\PackException;
 
@@ -73,8 +72,7 @@ class LenJsonPack extends AbstractPack
         }
         $clientData = new ClientData();
         $clientData->setData($value);
-        $clientData->setControllerName($value['c']);
-        $clientData->setMethodName($value['m']);
+        $clientData->setPath($value['p']);
         return $clientData;
     }
 }

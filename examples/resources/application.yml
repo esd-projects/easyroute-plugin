@@ -6,8 +6,7 @@ esd:
       port: 8081
       sock_type: 1
       open_http_protocol: true
-      controller_name_space: ESD\Plugins\EasyRoute\ExampleClass
-      index_controller_name: TestController
+      index_controller_name: ESD\Plugins\EasyRoute\ExampleClass\AnnController
 scan:
   include_paths:
     examples: /mnt/c/Users/administrato/PhpstormProjects/easyroute/exampleClass

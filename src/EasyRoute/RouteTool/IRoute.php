@@ -2,8 +2,6 @@
 
 namespace ESD\Plugins\EasyRoute\RouteTool;
 
-use ESD\BaseServer\Server\Beans\Request;
-use ESD\BaseServer\Server\Beans\Response;
 use ESD\Plugins\EasyRoute\ClientData;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
 
@@ -16,8 +14,6 @@ use ESD\Plugins\EasyRoute\EasyRouteConfig;
 interface IRoute
 {
     public function handleClientData(ClientData $data, EasyRouteConfig $easyRouteConfig): bool;
-
-    public function handleClientRequest(Request $request, Response $response, EasyRouteConfig $easyRouteConfig): bool;
 
     public function getControllerName();
 

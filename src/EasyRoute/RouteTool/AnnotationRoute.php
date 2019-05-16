@@ -11,8 +11,6 @@ namespace ESD\Plugins\EasyRoute\RouteTool;
 
 use ESD\BaseServer\Exception;
 use ESD\BaseServer\Plugins\Logger\GetLogger;
-use ESD\BaseServer\Server\Beans\Request;
-use ESD\BaseServer\Server\Beans\Response;
 use ESD\Plugins\EasyRoute\Annotation\ModelAttribute;
 use ESD\Plugins\EasyRoute\Annotation\PathVariable;
 use ESD\Plugins\EasyRoute\Annotation\RequestBody;
@@ -38,42 +36,16 @@ class AnnotationRoute implements IRoute
      * @param EasyRouteConfig $easyRouteConfig
      * @return bool
      * @throws RouteException
+     * @throws Exception
      */
     public function handleClientData(ClientData $data, EasyRouteConfig $easyRouteConfig): bool
     {
         $this->clientData = $data;
-        if (!empty($this->clientData->getControllerName()) && !empty($this->clientData->getMethodName())) {
-            return true;
-        } else {
-            throw new RouteException('route 数据缺少必要字段');
-        }
-    }
-
-    /**
-     * 处理http request
-     * @param Request $request
-     * @param Response $response
-     * @param EasyRouteConfig $easyRouteConfig
-     * @return bool
-     * @throws RouteException
-     * @throws Exception
-     */
-    public function handleClientRequest(Request $request, Response $response, EasyRouteConfig $easyRouteConfig): bool
-    {
-        $this->clientData = new ClientData();
-        $this->clientData->setPath($request->getServer(Request::SERVER_PATH_INFO));
-        $routeInfo = EasyRoutePlugin::$instance->getDispatcher()->dispatch($request->getServer(Request::SERVER_REQUEST_METHOD), $this->clientData->getPath());
+        $port = $this->clientData->getClientInfo()->getServerPort();
+        $routeInfo = EasyRoutePlugin::$instance->getDispatcher()->dispatch($port . ":" . $this->clientData->getRequestMethod(), $this->clientData->getPath());
+        $request = $this->clientData->getRequest();
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                if (trim($this->clientData->getPath(), "/") == "favicon.ico") {
-                    if (is_file($easyRouteConfig->getFaviconPath())) {
-                        $response->addHeader("Content-Type", "image/x-icon");
-                        $response->sendfile($easyRouteConfig->getFaviconPath());
-                    } else {
-                        $response->end("");
-                    }
-                    return false;
-                }
                 throw new RouteException("{$this->clientData->getPath()} 404 Not found");
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
@@ -91,6 +63,7 @@ class AnnotationRoute implements IRoute
                         if ($result == null) throw new Exception("path {$annotation->value} not find");
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestParam) {
+                        if ($request == null) continue;
                         if ($annotation->required) {
                             $result = $request->getGetRequire($annotation->value);
                         } else {
@@ -98,6 +71,7 @@ class AnnotationRoute implements IRoute
                         }
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestFormData) {
+                        if ($request == null) continue;
                         if ($annotation->required) {
                             $result = $request->getPostRequire($annotation->value);
                         } else {
@@ -105,9 +79,11 @@ class AnnotationRoute implements IRoute
                         }
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestBody) {
+                        if ($request == null) continue;
                         $json = $request->getRawContent();
                         $params[$annotation->value] = json_decode($json, true);
                     } else if ($annotation instanceof ModelAttribute) {
+                        if ($request == null) continue;
                         $params[$annotation->value] = $request->post();
                     }
                 }

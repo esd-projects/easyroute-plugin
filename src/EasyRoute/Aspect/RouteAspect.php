@@ -11,12 +11,15 @@ namespace ESD\Plugins\EasyRoute\Aspect;
 
 use ESD\BaseServer\Plugins\Logger\GetLogger;
 use ESD\BaseServer\Server\AbstractServerPort;
+use ESD\BaseServer\Server\Beans\Request;
 use ESD\BaseServer\Server\Beans\Response;
 use ESD\BaseServer\Server\Beans\WebSocketFrame;
 use ESD\BaseServer\Server\Server;
+use ESD\Plugins\EasyRoute\ClientData;
 use ESD\Plugins\EasyRoute\Controller\IController;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
 use ESD\Plugins\EasyRoute\PackTool\IPack;
+use ESD\Plugins\EasyRoute\RouteConfig;
 use ESD\Plugins\EasyRoute\RouteException;
 use ESD\Plugins\EasyRoute\RouteTool\IRoute;
 use Go\Aop\Aspect;
@@ -45,12 +48,18 @@ class RouteAspect implements Aspect
     protected $controllers = [];
 
     /**
+     * @var RouteConfig
+     */
+    protected $routeConfig;
+
+    /**
      * RouteAspect constructor.
      * @param $easyRouteConfigs
+     * @param $routeConfig
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      */
-    public function __construct($easyRouteConfigs)
+    public function __construct($easyRouteConfigs, $routeConfig)
     {
         $this->easyRouteConfigs = $easyRouteConfigs;
         foreach ($this->easyRouteConfigs as $easyRouteConfig) {
@@ -65,6 +74,7 @@ class RouteAspect implements Aspect
                 $this->routeTools[$easyRouteConfig->getRouteTool()] = Server::$instance->getContainer()->get($className);
             }
         }
+        $this->routeConfig = $routeConfig;
     }
 
     /**
@@ -84,11 +94,17 @@ class RouteAspect implements Aspect
             setContextValue("EasyRouteConfig", $easyRouteConfig);
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
             try {
-                $result = $routeTool->handleClientRequest($request, $response, $easyRouteConfig);
+                $clientData = new ClientData($request->fd,
+                    $request->getServer(Request::SERVER_REQUEST_METHOD),
+                    $request->getServer(Request::SERVER_PATH_INFO),
+                    $request->getData());
+                $clientData->setRequest($request);
+                $clientData->setResponse($response);
+                $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
                 if (!$result) return;
                 $controllerInstance = $this->getController($easyRouteConfig, $routeTool->getControllerName());
                 $result = $controllerInstance->handle($routeTool->getControllerName(), $routeTool->getMethodName(), $routeTool->getParams());
-                if ($easyRouteConfig->isAutoJson() && (is_array($result) || is_object($result))) {
+                if ($this->routeConfig->isAutoResponseBody() && (is_array($result) || is_object($result))) {
                     $result = json_encode($result, JSON_UNESCAPED_UNICODE);
                     $response->addHeader("Content-Type", "application/json");
                 }
@@ -96,7 +112,7 @@ class RouteAspect implements Aspect
             } catch (\Throwable $e) {
                 try {
                     //这里的错误会移交给IndexController处理
-                    $controllerInstance = $this->getController($easyRouteConfig, $easyRouteConfig->getControllerNameSpace() . "\\" . $easyRouteConfig->getIndexControllerName());
+                    $controllerInstance = $this->getController($easyRouteConfig, $this->routeConfig->getErrorControllerName());
                     $controllerInstance->initialization($routeTool->getControllerName(), $routeTool->getMethodName());
                     $response->append($controllerInstance->onExceptionHandle($e));
                 } catch (\Throwable $e) {
@@ -137,7 +153,7 @@ class RouteAspect implements Aspect
             } catch (\Throwable $e) {
                 try {
                     //这里的错误会移交给IndexController处理
-                    $controllerInstance = $this->getController($easyRouteConfig, $easyRouteConfig->getControllerNameSpace() . "\\" . $easyRouteConfig->getIndexControllerName());
+                    $controllerInstance = $this->getController($easyRouteConfig, $this->routeConfig->getErrorControllerName());
                     $controllerInstance->initialization($routeTool->getControllerName(), $routeTool->getMethodName());
                     $controllerInstance->onExceptionHandle($e);
                 } catch (\Throwable $e) {
@@ -177,7 +193,7 @@ class RouteAspect implements Aspect
             } catch (\Throwable $e) {
                 try {
                     //这里的错误会移交给IndexController处理
-                    $controllerInstance = $this->getController($easyRouteConfig, $easyRouteConfig->getControllerNameSpace() . "\\" . $easyRouteConfig->getIndexControllerName());
+                    $controllerInstance = $this->getController($easyRouteConfig, $this->routeConfig->getErrorControllerName());
                     $controllerInstance->initialization($routeTool->getControllerName(), $routeTool->getMethodName());
                     $controllerInstance->onExceptionHandle($e);
                 } catch (\Throwable $e) {
@@ -213,7 +229,7 @@ class RouteAspect implements Aspect
             } catch (\Throwable $e) {
                 try {
                     //这里的错误会移交给IndexController处理
-                    $controllerInstance = $this->getController($easyRouteConfig, $easyRouteConfig->getControllerNameSpace() . "\\" . $easyRouteConfig->getIndexControllerName());
+                    $controllerInstance = $this->getController($easyRouteConfig, $this->routeConfig->getErrorControllerName());
                     $controllerInstance->initialization($routeTool->getControllerName(), $routeTool->getMethodName());
                     $controllerInstance->onExceptionHandle($e);
                 } catch (\Throwable $e) {

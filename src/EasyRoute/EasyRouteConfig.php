@@ -17,16 +17,6 @@ class EasyRouteConfig extends PortConfig
     /**
      * @var string
      */
-    protected $controllerNameSpace = "";
-
-    /**
-     * @var bool
-     */
-    protected $autoJson = true;
-
-    /**
-     * @var string
-     */
     protected $packTool = LenJsonPack::class;
 
     /**
@@ -34,20 +24,6 @@ class EasyRouteConfig extends PortConfig
      */
     protected $routeTool = AnnotationRoute::class;
 
-    /**
-     * @var string
-     */
-    protected $indexControllerName = "IndexController";
-
-    /**
-     * @var string
-     */
-    protected $methodPrefix = "";
-
-    /**
-     * @var string
-     */
-    protected $faviconPath = "";
 
     /**
      * @return string
@@ -80,86 +56,4 @@ class EasyRouteConfig extends PortConfig
     {
         $this->routeTool = $routeTool;
     }
-
-    /**
-     * @return string
-     */
-    public function getMethodPrefix(): string
-    {
-        return $this->methodPrefix;
-    }
-
-    /**
-     * @param string $methodPrefix
-     */
-    public function setMethodPrefix(string $methodPrefix): void
-    {
-        $this->methodPrefix = $methodPrefix;
-    }
-
-    /**
-     * @return string
-     */
-    public function getControllerNameSpace(): string
-    {
-        return $this->controllerNameSpace;
-    }
-
-    /**
-     * @param string $controllerNameSpace
-     */
-    public function setControllerNameSpace(string $controllerNameSpace): void
-    {
-        $this->controllerNameSpace = $controllerNameSpace;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFaviconPath(): string
-    {
-        return $this->faviconPath;
-    }
-
-    /**
-     * @param string $faviconPath
-     */
-    public function setFaviconPath(string $faviconPath): void
-    {
-        $this->faviconPath = $faviconPath;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIndexControllerName(): string
-    {
-        return $this->indexControllerName;
-    }
-
-    /**
-     * @param string $indexControllerName
-     */
-    public function setIndexControllerName(string $indexControllerName): void
-    {
-        $this->indexControllerName = $indexControllerName;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAutoJson(): bool
-    {
-        return $this->autoJson;
-    }
-
-    /**
-     * @param bool $autoJson
-     */
-    public function setAutoJson(bool $autoJson): void
-    {
-        $this->autoJson = $autoJson;
-    }
-
-
 }
