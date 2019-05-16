@@ -10,7 +10,6 @@ namespace ESD\Plugins\EasyRoute\ExampleClass;
 
 use ESD\Plugins\EasyRoute\Annotation\RequestMapping;
 use ESD\Plugins\EasyRoute\Annotation\WsController;
-use ESD\Plugins\EasyRoute\Annotation\WsMapping;
 use ESD\Plugins\EasyRoute\Controller\EasyController;
 
 /**
