@@ -12,7 +12,6 @@ namespace ESD\Plugins\EasyRoute\PackTool;
 
 use ESD\BaseServer\Plugins\Logger\GetLogger;
 use ESD\BaseServer\Server\Config\PortConfig;
-use ESD\BaseServer\Server\Server;
 use ESD\Plugins\EasyRoute\ClientData;
 use ESD\Plugins\EasyRoute\PackException;
 
@@ -58,22 +57,21 @@ class EofJsonPack extends AbstractPack
 
     /**
      * 数据包解包
-     * @param $data
+     * @param int $fd
+     * @param string $data
      * @param PortConfig $portConfig
      * @return mixed
      * @throws PackException
+     * @throws \ESD\BaseServer\Server\Exception\ConfigException
      */
-    public function unPack(string $data, PortConfig $portConfig): ClientData
+    public function unPack(int $fd, string $data, PortConfig $portConfig): ClientData
     {
         $this->portConfig = $portConfig;
-        $value = json_decode($this->decode($data),true);
+        $value = json_decode($this->decode($data), true);
         if (empty($value)) {
             throw new PackException('json unPack 失败');
         }
-        $clientData = new ClientData();
-        $clientData->setData($value);
-        $clientData->setControllerName($value['c']);
-        $clientData->setMethodName($value['m']);
+        $clientData = new ClientData($fd, $portConfig->getBaseType(), $value['p'], $value);
         return $clientData;
     }
 }

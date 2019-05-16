@@ -141,7 +141,7 @@ class RouteAspect implements Aspect
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
             try {
-                $clientData = $packTool->unPack($data, $easyRouteConfig);
+                $clientData = $packTool->unPack($fd, $data, $easyRouteConfig);
                 setContextValue("ClientData", $clientData);
                 $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
                 if (!$result) return;
@@ -181,7 +181,7 @@ class RouteAspect implements Aspect
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
             try {
-                $clientData = $packTool->unPack($frame->getData(), $easyRouteConfig);
+                $clientData = $packTool->unPack($frame->getFd(), $frame->getData(), $easyRouteConfig);
                 setContextValue("ClientData", $clientData);
                 $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
                 if (!$result) return;
@@ -220,7 +220,8 @@ class RouteAspect implements Aspect
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
             try {
                 setContextValue("EasyRouteConfig", $easyRouteConfig);
-                $clientData = $packTool->unPack($data, $easyRouteConfig);
+                $clientData = $packTool->unPack(-1, $data, $easyRouteConfig);
+                $clientData->setUdpClientInfo($clientInfo);
                 setContextValue("ClientData", $clientData);
                 $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
                 if (!$result) return;

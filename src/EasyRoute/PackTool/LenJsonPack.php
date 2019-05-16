@@ -58,21 +58,21 @@ class LenJsonPack extends AbstractPack
     }
 
     /**
-     * @param $data
+     * @param int $fd
+     * @param string $data
      * @param PortConfig $portConfig
      * @return ClientData
      * @throws PackException
+     * @throws \ESD\BaseServer\Server\Exception\ConfigException
      */
-    public function unPack(string $data, PortConfig $portConfig): ClientData
+    public function unPack(int $fd, string $data, PortConfig $portConfig): ClientData
     {
         $this->portConfig = $portConfig;
-        $value = json_decode($this->decode($data),true);
+        $value = json_decode($this->decode($data), true);
         if (empty($value)) {
             throw new PackException('json unPack 失败');
         }
-        $clientData = new ClientData();
-        $clientData->setData($value);
-        $clientData->setPath($value['p']);
+        $clientData = new ClientData($fd, $portConfig->getBaseType(), $value['p'], $value);
         return $clientData;
     }
 }

@@ -18,6 +18,7 @@ abstract class AbstractPack implements IPack
      * @var PortConfig
      */
     protected $portConfig;
+
     /**
      * 获取长度
      * c：有符号、1字节

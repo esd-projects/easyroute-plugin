@@ -64,6 +64,7 @@ class ClientData
      */
     protected $data;
 
+
     /**
      * ClientData constructor.
      * @param $fd
@@ -208,7 +209,9 @@ class ClientData
     public function setFd(int $fd): void
     {
         $this->fd = $fd;
-        $this->clientInfo = Server::$instance->getClientInfo($fd);
+        if ($this->fd >= 0) {
+            $this->clientInfo = Server::$instance->getClientInfo($fd);
+        }
     }
 
     /**
@@ -225,5 +228,19 @@ class ClientData
     public function setRequestMethod(string $requestMethod): void
     {
         $this->requestMethod = $requestMethod;
+    }
+
+    /**
+     * udp专用
+     * @param array $clientInfo
+     */
+    public function setUdpClientInfo(array $clientInfo): void
+    {
+        $this->clientInfo = new ClientInfo(
+            [
+                "server_port" => $clientInfo['port'],
+                "remote_ip" => $clientInfo['address'],
+            ]
+        );
     }
 }
