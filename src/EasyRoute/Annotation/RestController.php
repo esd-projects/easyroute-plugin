@@ -17,4 +17,5 @@ namespace ESD\Plugins\EasyRoute\Annotation;
 class RestController extends Controller
 {
     public $portTypes = ["http"];
+    public $defaultMethod = "GET";
 }

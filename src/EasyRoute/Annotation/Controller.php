@@ -24,6 +24,12 @@ class Controller extends Component
      * @var string
      */
     public $value = "";
+
+    /**
+     * 默认方法
+     * @var string
+     */
+    public $defaultMethod;
     /**
      * 端口访问类型，http,ws,tcp,udp，如果为空数组则无限制
      * @var array

@@ -197,6 +197,9 @@ class EasyRoutePlugin extends AbstractPlugin
                             $route .= "/" . $requestMapping->value;
                         }
                     }
+                    if (empty($requestMapping->method)) {
+                        $requestMapping->method[] = $controller->defaultMethod;
+                    }
                     foreach ($requestMapping->method as $method) {
                         $routeRole = new RouteRoleConfig();
                         $routeRole->setRoute($route);

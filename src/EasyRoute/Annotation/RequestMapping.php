@@ -17,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation;
  */
 class RequestMapping extends Annotation
 {
-    public $value = "";
+    public $value;
     public $method = [];
 }

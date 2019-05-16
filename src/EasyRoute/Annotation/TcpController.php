@@ -17,4 +17,5 @@ namespace ESD\Plugins\EasyRoute\Annotation;
 class TcpController extends Controller
 {
     public $portTypes = ["tcp"];
+    public $defaultMethod = "TCP";
 }
