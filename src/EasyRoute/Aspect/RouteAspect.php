@@ -129,6 +129,7 @@ class RouteAspect implements Aspect
      *
      * @param MethodInvocation $invocation Invocation
      * @throws \ESD\BaseServer\Exception
+     * @throws \Throwable
      * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onTcpReceive(*))")
      */
     protected function aroundTcpReceive(MethodInvocation $invocation)
@@ -136,7 +137,7 @@ class RouteAspect implements Aspect
         list($fd, $reactorId, $data) = $invocation->getArguments();
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort) {
-            $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
+            $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
             setContextValue("EasyRouteConfig", $easyRouteConfig);
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
@@ -159,6 +160,7 @@ class RouteAspect implements Aspect
                 } catch (\Throwable $e) {
                     $this->warn($e);
                 }
+                throw $e;
             }
         }
         return;
@@ -169,6 +171,7 @@ class RouteAspect implements Aspect
      *
      * @param MethodInvocation $invocation Invocation
      * @throws \ESD\BaseServer\Exception
+     * @throws \Throwable
      * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onWsMessage(*))")
      */
     protected function aroundWsMessage(MethodInvocation $invocation)
@@ -176,7 +179,7 @@ class RouteAspect implements Aspect
         list($frame) = $invocation->getArguments();
         $abstractServerPort = $invocation->getThis();
         if ($abstractServerPort instanceof AbstractServerPort && $frame instanceof WebSocketFrame) {
-            $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getName()];
+            $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
             setContextValue("EasyRouteConfig", $easyRouteConfig);
             $packTool = $this->packTools[$easyRouteConfig->getPackTool()];
             $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
@@ -199,6 +202,7 @@ class RouteAspect implements Aspect
                 } catch (\Throwable $e) {
                     $this->warn($e);
                 }
+                throw $e;
             }
         }
         return;
@@ -209,6 +213,7 @@ class RouteAspect implements Aspect
      *
      * @param MethodInvocation $invocation Invocation
      * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onUdpPacket(*))")
+     * @throws \Throwable
      */
     protected function aroundUdpPacket(MethodInvocation $invocation)
     {
@@ -236,6 +241,7 @@ class RouteAspect implements Aspect
                 } catch (\Throwable $e) {
                     $this->warn($e);
                 }
+                throw $e;
             }
         }
         return;

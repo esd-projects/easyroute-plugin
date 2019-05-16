@@ -16,5 +16,5 @@ namespace ESD\Plugins\EasyRoute\Annotation;
  */
 class WsController extends Controller
 {
-    public $types = ["ws"];
+    public $portTypes = ["ws"];
 }

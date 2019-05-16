@@ -11,7 +11,7 @@ namespace ESD\Plugins\EasyRoute;
 
 trait GetClientData
 {
-    public function getClientData():ClientData
+    public function getClientData(): ?ClientData
     {
        return getDeepContextValueByClassName(ClientData::class);
     }

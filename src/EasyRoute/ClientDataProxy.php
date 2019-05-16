@@ -24,6 +24,9 @@ class ClientDataProxy
 
     public function __call($name, $arguments)
     {
+        if ($this->getClientData() == null) {
+            return null;
+        }
         return call_user_func_array([$this->getClientData(), $name], $arguments);
     }
 }

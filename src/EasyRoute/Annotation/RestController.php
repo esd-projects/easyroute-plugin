@@ -16,5 +16,5 @@ namespace ESD\Plugins\EasyRoute\Annotation;
  */
 class RestController extends Controller
 {
-    public $types = ["http"];
+    public $portTypes = ["http"];
 }

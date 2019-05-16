@@ -16,5 +16,5 @@ namespace ESD\Plugins\EasyRoute\Annotation;
  */
 class UdpController extends Controller
 {
-    public $types = ["udp"];
+    public $portTypes = ["udp"];
 }

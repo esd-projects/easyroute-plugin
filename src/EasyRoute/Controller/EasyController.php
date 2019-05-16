@@ -12,8 +12,8 @@ namespace ESD\Plugins\EasyRoute\Controller;
 use DI\Annotation\Inject;
 use ESD\BaseServer\Server\Beans\Request;
 use ESD\BaseServer\Server\Beans\Response;
+use ESD\Plugins\EasyRoute\ClientData;
 use Monolog\Logger;
-use ReflectionFunction;
 
 abstract class EasyController implements IController
 {
@@ -27,6 +27,11 @@ abstract class EasyController implements IController
      * @var Response
      */
     protected $response;
+    /**
+     * @Inject()
+     * @var ClientData
+     */
+    protected $clientData;
     /**
      * @Inject()
      * @var Logger
@@ -87,8 +92,10 @@ abstract class EasyController implements IController
      */
     public function onExceptionHandle(\Throwable $e)
     {
-        $this->response->setStatus(404);
-        $this->response->addHeader("Content-Type", "text/html;charset=UTF-8");
+        if ($this->clientData->getResponse() != null) {
+            $this->response->setStatus(404);
+            $this->response->addHeader("Content-Type", "text/html;charset=UTF-8");
+        }
         return $e->getMessage();
     }
 

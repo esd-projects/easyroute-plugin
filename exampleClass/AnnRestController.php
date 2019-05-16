@@ -22,7 +22,7 @@ use ESD\Plugins\EasyRoute\Controller\EasyController;
  * Class TestController
  * @package ESD\Plugins\EasyRoute
  */
-class AnnController extends EasyController
+class AnnRestController extends EasyController
 {
     /**
      * get请求

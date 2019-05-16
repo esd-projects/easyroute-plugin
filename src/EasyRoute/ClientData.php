@@ -219,7 +219,7 @@ class ClientData
      */
     public function getRequestMethod(): string
     {
-        return $this->requestMethod;
+        return strtoupper($this->requestMethod);
     }
 
     /**

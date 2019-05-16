@@ -120,6 +120,7 @@ class AnnotationRoute implements IRoute
      */
     public function getControllerName()
     {
+        if ($this->clientData == null) return null;
         return $this->clientData->getControllerName();
     }
 
@@ -129,23 +130,26 @@ class AnnotationRoute implements IRoute
      */
     public function getMethodName()
     {
+        if ($this->clientData == null) return null;
         return $this->clientData->getMethodName();
     }
 
     public function getPath()
     {
+        if ($this->clientData == null) return null;
         return $this->clientData->getPath();
     }
 
     public function getParams()
     {
+        if ($this->clientData == null) return null;
         return $this->clientData->getParams();
     }
 
     /**
      * @return ClientData
      */
-    public function getClientData(): ClientData
+    public function getClientData(): ?ClientData
     {
         return $this->clientData;
     }

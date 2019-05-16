@@ -1,12 +1,16 @@
 esd:
   port:
     http:
-      name: http
       host: 0.0.0.0
       port: 8081
       sock_type: 1
       open_http_protocol: true
-      index_controller_name: ESD\Plugins\EasyRoute\ExampleClass\AnnController
+    ws:
+      host: 0.0.0.0
+      port: 8082
+      sock_type: 1
+      open_websocket_protocol: true
+      pack_tool: ESD\Plugins\EasyRoute\PackTool\NonJsonPack
 scan:
   include_paths:
     examples: /mnt/c/Users/administrato/PhpstormProjects/easyroute/exampleClass
