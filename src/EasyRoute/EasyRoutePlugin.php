@@ -151,7 +151,7 @@ class EasyRoutePlugin extends AbstractPlugin
         foreach ($couldPortNames as $portName) {
             $type = strtoupper($routeRole->getType());
             $port = Server::$instance->getPortManager()->getPortConfigs()[$portName]->getPort();
-            Server::$instance->getLog()->debug("Mapping $port:{$type} {$routeRole->getRoute()} to $reflectionClass->name::$reflectionMethod->name");
+            Server::$instance->getLog()->info("Mapping $port:{$type} {$routeRole->getRoute()} to $reflectionClass->name::$reflectionMethod->name");
             $r->addRoute("$port:{$type}", $routeRole->getRoute(), [$reflectionClass, $reflectionMethod]);
         }
     }
@@ -189,14 +189,16 @@ class EasyRoutePlugin extends AbstractPlugin
                 }
                 $requestMapping = $this->scanClass->getCachedReader()->getMethodAnnotation($reflectionMethod, RequestMapping::class);
                 if ($requestMapping instanceof RequestMapping) {
-                    $requestMapping->value = trim($requestMapping->value, "/");
-                    if (!empty($requestMapping->value)) {
-                        if (empty($controller->value)) {
-                            $route .= $requestMapping->value;
-                        } else {
-                            $route .= "/" . $requestMapping->value;
-                        }
+                    if (empty($requestMapping->value)) {
+                        $requestMapping->value = $reflectionMethod->getName();
                     }
+                    $requestMapping->value = trim($requestMapping->value, "/");
+                    if (empty($controller->value)) {
+                        $route .= $requestMapping->value;
+                    } else {
+                        $route .= "/" . $requestMapping->value;
+                    }
+
                     if (empty($requestMapping->method)) {
                         $requestMapping->method[] = $controller->defaultMethod;
                     }
