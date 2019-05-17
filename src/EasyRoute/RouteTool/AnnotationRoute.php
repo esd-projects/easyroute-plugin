@@ -16,6 +16,9 @@ use ESD\Plugins\EasyRoute\Annotation\PathVariable;
 use ESD\Plugins\EasyRoute\Annotation\RequestBody;
 use ESD\Plugins\EasyRoute\Annotation\RequestFormData;
 use ESD\Plugins\EasyRoute\Annotation\RequestParam;
+use ESD\Plugins\EasyRoute\Annotation\RequestRaw;
+use ESD\Plugins\EasyRoute\Annotation\RequestRawJson;
+use ESD\Plugins\EasyRoute\Annotation\RequestRawXml;
 use ESD\Plugins\EasyRoute\ClientData;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
 use ESD\Plugins\EasyRoute\EasyRoutePlugin;
@@ -82,13 +85,28 @@ class AnnotationRoute implements IRoute
                             $result = $request->getPost($annotation->value);
                         }
                         $params[$annotation->param ?? $annotation->value] = $result;
-                    } else if ($annotation instanceof RequestBody) {
+                    } else if ($annotation instanceof RequestRawJson || $annotation instanceof RequestBody) {
                         if ($request == null) continue;
-                        $json = $request->getRawContent();
-                        $params[$annotation->value] = json_decode($json, true);
+                        if( !$json = json_decode($request->getRawContent(), true)){
+                            $this->warning('RequestRawJson errror, raw:' . $request->getRawContent());
+                            throw new RouteException('RawJson Format error');
+                        }
+                        $params[$annotation->value] = $json;
                     } else if ($annotation instanceof ModelAttribute) {
                         if ($request == null) continue;
                         $params[$annotation->value] = $request->post();
+                    }else if ($annotation instanceof RequestRaw){
+                        if ($request == null) continue;
+                        $raw = $request->getRawContent();
+                        $params[$annotation->value] = $raw;
+                    }else if ($annotation instanceof RequestRawXml){
+                        if ($request == null) continue;
+                        $raw = $request->getRawContent();
+                        if(!$xml = simplexml_load_string($raw, 'SimpleXMLElement',LIBXML_NOCDATA | LIBXML_NOBLANKS) ){
+                            $this->warning('RequestRawXml errror, raw:' . $request->getRawContent());
+                            throw new RouteException('RawXml Format error');
+                        }
+                        $params[$annotation->value] = json_decode(json_encode( $xml ), true);
                     }
                 }
                 $realParams = [];
