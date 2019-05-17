@@ -9,6 +9,7 @@
 namespace ESD\Plugins\EasyRoute\ExampleClass;
 
 
+use ESD\Plugins\Validate\Annotation\Filter;
 use ESD\Plugins\Validate\Annotation\Validated;
 
 class TestPost
@@ -19,6 +20,7 @@ class TestPost
      */
     public $one;
     /**
+     * @Filter(snakeCase=true)
      * @Validated(required=true);
      * @var string
      */

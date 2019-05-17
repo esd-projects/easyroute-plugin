@@ -23,6 +23,7 @@ use ESD\Plugins\EasyRoute\ClientData;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
 use ESD\Plugins\EasyRoute\EasyRoutePlugin;
 use ESD\Plugins\EasyRoute\RouteException;
+use ESD\Plugins\Validate\Annotation\Filter;
 use ESD\Plugins\Validate\Annotation\Validated;
 use FastRoute\Dispatcher;
 
@@ -87,7 +88,7 @@ class AnnotationRoute implements IRoute
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestRawJson || $annotation instanceof RequestBody) {
                         if ($request == null) continue;
-                        if( !$json = json_decode($request->getRawContent(), true)){
+                        if (!$json = json_decode($request->getRawContent(), true)) {
                             $this->warning('RequestRawJson errror, raw:' . $request->getRawContent());
                             throw new RouteException('RawJson Format error');
                         }
@@ -95,18 +96,18 @@ class AnnotationRoute implements IRoute
                     } else if ($annotation instanceof ModelAttribute) {
                         if ($request == null) continue;
                         $params[$annotation->value] = $request->post();
-                    }else if ($annotation instanceof RequestRaw){
+                    } else if ($annotation instanceof RequestRaw) {
                         if ($request == null) continue;
                         $raw = $request->getRawContent();
                         $params[$annotation->value] = $raw;
-                    }else if ($annotation instanceof RequestRawXml){
+                    } else if ($annotation instanceof RequestRawXml) {
                         if ($request == null) continue;
                         $raw = $request->getRawContent();
-                        if(!$xml = simplexml_load_string($raw, 'SimpleXMLElement',LIBXML_NOCDATA | LIBXML_NOBLANKS) ){
+                        if (!$xml = simplexml_load_string($raw, 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS)) {
                             $this->warning('RequestRawXml errror, raw:' . $request->getRawContent());
                             throw new RouteException('RawXml Format error');
                         }
-                        $params[$annotation->value] = json_decode(json_encode( $xml ), true);
+                        $params[$annotation->value] = json_decode(json_encode($xml), true);
                     }
                 }
                 $realParams = [];
@@ -116,6 +117,7 @@ class AnnotationRoute implements IRoute
                             $values = $params[$parameter->name];
                             if ($values != null) {
                                 //验证
+                                $values = Filter::filter($parameter->getClass(), $values);
                                 Validated::valid($parameter->getClass(), $values);
                                 $instance = $parameter->getClass()->newInstance();
                                 foreach ($instance as $key => $value) {
