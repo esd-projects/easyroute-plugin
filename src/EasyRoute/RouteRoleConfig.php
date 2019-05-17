@@ -130,7 +130,7 @@ class RouteRoleConfig extends BaseConfig
      */
     public function getRoute()
     {
-        return "/" . trim($this->route, "/");
+        return $this->route;
     }
 
     /**
@@ -138,7 +138,7 @@ class RouteRoleConfig extends BaseConfig
      */
     public function setRoute($route): void
     {
-        $this->route = $route;
+        $this->route = "/" . trim($route, "/");
     }
 
     /**

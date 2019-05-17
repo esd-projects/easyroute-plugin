@@ -120,7 +120,7 @@ class ClientData
      */
     public function getPath(): string
     {
-        return "/" . trim($this->path, "/");
+        return $this->path;
     }
 
     /**
@@ -128,7 +128,7 @@ class ClientData
      */
     public function setPath(string $path): void
     {
-        $this->path = $path;
+        $this->path = "/" . trim($path, "/");
     }
 
     /**
