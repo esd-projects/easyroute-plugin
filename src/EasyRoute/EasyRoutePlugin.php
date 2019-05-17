@@ -120,6 +120,7 @@ class EasyRoutePlugin extends AbstractPlugin
         parent::onAdded($pluginInterfaceManager);
         $pluginInterfaceManager->addPlug(new AopPlugin());
         $pluginInterfaceManager->addPlug(new AnnotationsScanPlugin());
+        $pluginInterfaceManager->addPlug(new ValidatePlugin());
     }
 
     /**
