@@ -111,7 +111,7 @@ class AnnotationRoute implements IRoute
                         if ($parameter->getClass() != null) {
                             $values = $params[$parameter->name];
                             if ($values != null) {
-                                $instance = $parameter->getClass()->newInstanceWithoutConstructor();
+                                $instance = $parameter->getClass()->newInstance();
                                 foreach ($instance as $key => $value) {
                                     $instance->$key = $values[$key] ?? null;
                                 }
