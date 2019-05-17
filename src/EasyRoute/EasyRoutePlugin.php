@@ -175,7 +175,7 @@ class EasyRoutePlugin extends AbstractPlugin
             //添加配置里的
             foreach ($this->routeConfig->getRouteRoles() as $routeRole) {
                 $reflectionClass = new ReflectionClass($routeRole->getController());
-                $reflectionMethod = new ReflectionMethod($routeRole->getMethod());
+                $reflectionMethod = new ReflectionMethod($routeRole->getController(), $routeRole->getMethod());
                 $this->addRoute($routeRole, $r, $reflectionClass, $reflectionMethod);
             }
             //添加注解里的
