@@ -9,7 +9,18 @@
 namespace ESD\Plugins\EasyRoute\ExampleClass;
 
 
+use ESD\Plugins\Validate\Annotation\Validated;
+
 class TestPost
 {
+    /**
+     * @Validated(required=true);
+     * @var string
+     */
     public $one;
+    /**
+     * @Validated(required=true);
+     * @var string
+     */
+    public $two;
 }

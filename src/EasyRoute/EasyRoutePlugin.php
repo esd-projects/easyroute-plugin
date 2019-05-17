@@ -21,6 +21,7 @@ use ESD\Plugins\Aop\AopPlugin;
 use ESD\Plugins\EasyRoute\Annotation\Controller;
 use ESD\Plugins\EasyRoute\Annotation\RequestMapping;
 use ESD\Plugins\EasyRoute\Aspect\RouteAspect;
+use ESD\Plugins\Validate\ValidatePlugin;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use ReflectionClass;
@@ -67,6 +68,7 @@ class EasyRoutePlugin extends AbstractPlugin
         $this->routeConfig = $routeConfig;
         //需要aop的支持，所以放在aop后加载
         $this->atAfter(AnnotationsScanPlugin::class);
+        $this->atAfter(ValidatePlugin::class);
         self::$instance = $this;
     }
 

@@ -20,6 +20,7 @@ use ESD\Plugins\EasyRoute\ClientData;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
 use ESD\Plugins\EasyRoute\EasyRoutePlugin;
 use ESD\Plugins\EasyRoute\RouteException;
+use ESD\Plugins\Validate\Annotation\Validated;
 use FastRoute\Dispatcher;
 
 class AnnotationRoute implements IRoute
@@ -35,8 +36,11 @@ class AnnotationRoute implements IRoute
      * @param ClientData $data
      * @param EasyRouteConfig $easyRouteConfig
      * @return bool
-     * @throws RouteException
      * @throws Exception
+     * @throws RouteException
+     * @throws ValidationException
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
     public function handleClientData(ClientData $data, EasyRouteConfig $easyRouteConfig): bool
     {
@@ -93,6 +97,8 @@ class AnnotationRoute implements IRoute
                         if ($parameter->getClass() != null) {
                             $values = $params[$parameter->name];
                             if ($values != null) {
+                                //验证
+                                Validated::valid($parameter->getClass(), $values);
                                 $instance = $parameter->getClass()->newInstance();
                                 foreach ($instance as $key => $value) {
                                     $instance->$key = $values[$key] ?? null;
