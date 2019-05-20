@@ -19,6 +19,7 @@ use ESD\Plugins\EasyRoute\Annotation\RequestParam;
 use ESD\Plugins\EasyRoute\Annotation\RequestRaw;
 use ESD\Plugins\EasyRoute\Annotation\RequestRawJson;
 use ESD\Plugins\EasyRoute\Annotation\RequestRawXml;
+use ESD\Plugins\EasyRoute\Annotation\ResponseBody;
 use ESD\Plugins\EasyRoute\ClientData;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
 use ESD\Plugins\EasyRoute\EasyRoutePlugin;
@@ -66,6 +67,9 @@ class AnnotationRoute implements IRoute
                 $params = [];
                 $methodReflection = $handler[1];
                 foreach (EasyRoutePlugin::$instance->getScanClass()->getCachedReader()->getMethodAnnotations($methodReflection) as $annotation) {
+                    if ($annotation instanceof ResponseBody) {
+                        $data->getResponse()->addHeader("Content-Type", $annotation->value);
+                    }
                     if ($annotation instanceof PathVariable) {
                         $result = $vars[$annotation->value] ?? null;
                         if ($result == null) throw new Exception("path {$annotation->value} not find");

@@ -104,10 +104,6 @@ class RouteAspect implements Aspect
                 if (!$result) return;
                 $controllerInstance = $this->getController($easyRouteConfig, $routeTool->getControllerName());
                 $result = $controllerInstance->handle($routeTool->getControllerName(), $routeTool->getMethodName(), $routeTool->getParams());
-                if ($this->routeConfig->isAutoResponseBody()) {
-                    $result = json_encode($result, JSON_UNESCAPED_UNICODE);
-                    $response->addHeader("Content-Type", "application/json");
-                }
                 if (is_array($result) || is_object($result)) {
                     $result = json_encode($result, JSON_UNESCAPED_UNICODE);
                 }

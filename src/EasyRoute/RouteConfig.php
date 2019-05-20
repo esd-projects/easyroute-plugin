@@ -16,10 +16,6 @@ class RouteConfig extends BaseConfig
 {
     const key = "route";
     /**
-     * @var bool
-     */
-    protected $autoResponseBody = true;
-    /**
      * @var string
      */
     protected $errorControllerName = NormalErrorController::class;
@@ -81,21 +77,5 @@ class RouteConfig extends BaseConfig
     public function setErrorControllerName(string $errorControllerName): void
     {
         $this->errorControllerName = $errorControllerName;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAutoResponseBody(): bool
-    {
-        return $this->autoResponseBody;
-    }
-
-    /**
-     * @param bool $autoResponseBody
-     */
-    public function setAutoResponseBody(bool $autoResponseBody): void
-    {
-        $this->autoResponseBody = $autoResponseBody;
     }
 }
