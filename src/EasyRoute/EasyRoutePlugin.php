@@ -26,7 +26,7 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use ReflectionClass;
 use ReflectionMethod;
-use function FastRoute\cachedDispatcher;
+use function FastRoute\simpleDispatcher;
 
 class EasyRoutePlugin extends AbstractPlugin
 {
@@ -174,7 +174,7 @@ class EasyRoutePlugin extends AbstractPlugin
         $this->scanClass = Server::$instance->getContainer()->get(ScanClass::class);
         $reflectionMethods = $this->scanClass->findMethodsByAnn(RequestMapping::class);
 
-        $this->dispatcher = cachedDispatcher(function (RouteCollector $r) use ($reflectionMethods) {
+        $this->dispatcher = simpleDispatcher(function (RouteCollector $r) use ($reflectionMethods) {
             //添加配置里的
             foreach ($this->routeConfig->getRouteRoles() as $routeRole) {
                 $reflectionClass = new ReflectionClass($routeRole->getController());
@@ -220,10 +220,7 @@ class EasyRoutePlugin extends AbstractPlugin
                     }
                 }
             }
-        }, [
-            'cacheFile' => Server::$instance->getServerConfig()->getCacheDir() . "/route", /* required 缓存文件路径，必须设置 */
-            'cacheDisabled' => Server::$instance->getServerConfig()->isDebug()  /* optional, enabled by default 是否缓存，可选参数，默认情况下开启 */
-        ]);
+        });
         $this->routeConfig->merge();
     }
 
