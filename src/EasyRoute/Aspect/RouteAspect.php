@@ -284,7 +284,7 @@ class RouteAspect implements Aspect
         $clientInfo = Server::$instance->getClientInfo($fd);
         $easyRouteConfig = $this->easyRouteConfigs[$clientInfo->getServerPort()];
         $pack = $this->packTools[$easyRouteConfig->getPackTool()];
-        $data = $pack->pack($easyRouteConfig, $data);
+        $data = $pack->pack($data, $easyRouteConfig);
         if (Server::$instance->isEstablished($fd)) {
             return Server::$instance->wsPush($fd, $data, $easyRouteConfig->getWsOpcode());
         } else {
