@@ -243,4 +243,12 @@ class ClientData
             ]
         );
     }
+
+    /**
+     * @return int
+     */
+    public function getFd(): ?int
+    {
+        return $this->fd;
+    }
 }
