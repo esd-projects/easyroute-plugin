@@ -179,11 +179,12 @@ class EasyRoutePlugin extends AbstractPlugin
             foreach ($this->routeConfig->getRouteRoles() as $routeRole) {
                 $reflectionClass = new ReflectionClass($routeRole->getController());
                 $reflectionMethod = new ReflectionMethod($routeRole->getController(), $routeRole->getMethod());
+                $reflectionMethod->reflectionClass = $reflectionClass;
                 $this->addRoute($routeRole, $r, $reflectionClass, $reflectionMethod);
             }
             //添加注解里的
             foreach ($reflectionMethods as $reflectionMethod) {
-                $reflectionClass = $reflectionMethod->getDeclaringClass();
+                $reflectionClass = $reflectionMethod->reflectionClass;
                 $route = "/";
                 $controller = $this->scanClass->getCachedReader()->getClassAnnotation($reflectionClass, Controller::class);
                 if ($controller instanceof Controller) {
