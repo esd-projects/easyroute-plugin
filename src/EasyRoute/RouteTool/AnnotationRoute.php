@@ -20,10 +20,10 @@ use ESD\Plugins\EasyRoute\Annotation\RequestRaw;
 use ESD\Plugins\EasyRoute\Annotation\RequestRawJson;
 use ESD\Plugins\EasyRoute\Annotation\RequestRawXml;
 use ESD\Plugins\EasyRoute\Annotation\ResponseBody;
-use ESD\Plugins\EasyRoute\ClientData;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
 use ESD\Plugins\EasyRoute\EasyRoutePlugin;
 use ESD\Plugins\EasyRoute\RouteException;
+use ESD\Plugins\Pack\ClientData;
 use ESD\Plugins\Validate\Annotation\ValidatedFilter;
 use FastRoute\Dispatcher;
 

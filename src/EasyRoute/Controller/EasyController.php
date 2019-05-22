@@ -12,7 +12,7 @@ namespace ESD\Plugins\EasyRoute\Controller;
 use DI\Annotation\Inject;
 use ESD\BaseServer\Server\Beans\Request;
 use ESD\BaseServer\Server\Beans\Response;
-use ESD\Plugins\EasyRoute\ClientData;
+use ESD\Plugins\Pack\ClientData;
 use Monolog\Logger;
 
 abstract class EasyController implements IController

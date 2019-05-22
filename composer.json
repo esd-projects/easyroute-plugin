@@ -2,6 +2,7 @@
   "require": {
     "esd/base-server": "~0.1",
     "esd/aop-plugin": "~0.1",
+    "esd/pack-plugin": "~0.1",
     "esd/annotations-scan-plugin": "~0.1",
     "esd/validate-plugin": "~0.1",
     "ext-json": "*",

@@ -10,7 +10,6 @@ esd:
       port: 8082
       sock_type: 1
       open_websocket_protocol: true
-      pack_tool: ESD\Plugins\EasyRoute\PackTool\NonJsonPack
 scan:
   include_paths:
     examples: /mnt/c/Users/administrato/PhpstormProjects/easyroute/exampleClass

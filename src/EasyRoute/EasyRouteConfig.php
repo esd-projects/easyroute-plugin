@@ -9,8 +9,8 @@
 namespace ESD\Plugins\EasyRoute;
 
 use ESD\BaseServer\Server\Config\PortConfig;
-use ESD\Plugins\EasyRoute\PackTool\LenJsonPack;
 use ESD\Plugins\EasyRoute\RouteTool\AnnotationRoute;
+use ESD\Plugins\Pack\PackTool\LenJsonPack;
 
 class EasyRouteConfig extends PortConfig
 {

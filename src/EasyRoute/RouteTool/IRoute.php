@@ -2,8 +2,8 @@
 
 namespace ESD\Plugins\EasyRoute\RouteTool;
 
-use ESD\Plugins\EasyRoute\ClientData;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
+use ESD\Plugins\Pack\ClientData;
 
 /**
  * Created by PhpStorm.

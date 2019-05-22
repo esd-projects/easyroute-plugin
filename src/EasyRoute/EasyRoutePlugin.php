@@ -17,10 +17,12 @@ use ESD\BaseServer\Server\Server;
 use ESD\Plugins\AnnotationsScan\AnnotationsScanPlugin;
 use ESD\Plugins\AnnotationsScan\ScanClass;
 use ESD\Plugins\Aop\AopConfig;
-use ESD\Plugins\Aop\AopPlugin;
 use ESD\Plugins\EasyRoute\Annotation\Controller;
 use ESD\Plugins\EasyRoute\Annotation\RequestMapping;
 use ESD\Plugins\EasyRoute\Aspect\RouteAspect;
+use ESD\Plugins\Pack\ClientData;
+use ESD\Plugins\Pack\ClientDataProxy;
+use ESD\Plugins\Pack\PackPlugin;
 use ESD\Plugins\Validate\ValidatePlugin;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
@@ -66,9 +68,10 @@ class EasyRoutePlugin extends AbstractPlugin
             $routeConfig = new RouteConfig();
         }
         $this->routeConfig = $routeConfig;
-        //需要aop的支持，所以放在aop后加载
+        //需要插件支持
         $this->atAfter(AnnotationsScanPlugin::class);
         $this->atAfter(ValidatePlugin::class);
+        $this->atAfter(PackPlugin::class);
         self::$instance = $this;
     }
 
@@ -118,9 +121,9 @@ class EasyRoutePlugin extends AbstractPlugin
     public function onAdded(PluginInterfaceManager $pluginInterfaceManager)
     {
         parent::onAdded($pluginInterfaceManager);
-        $pluginInterfaceManager->addPlug(new AopPlugin());
         $pluginInterfaceManager->addPlug(new AnnotationsScanPlugin());
         $pluginInterfaceManager->addPlug(new ValidatePlugin());
+        $pluginInterfaceManager->addPlug(new PackPlugin());
     }
 
     /**
