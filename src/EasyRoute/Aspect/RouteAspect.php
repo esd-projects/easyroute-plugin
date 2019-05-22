@@ -11,6 +11,7 @@ namespace ESD\Plugins\EasyRoute\Aspect;
 
 use ESD\BaseServer\Plugins\Logger\GetLogger;
 use ESD\BaseServer\Server\Server;
+use ESD\Plugins\Aop\OrderAspect;
 use ESD\Plugins\EasyRoute\Controller\IController;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
 use ESD\Plugins\EasyRoute\RouteConfig;
@@ -18,11 +19,10 @@ use ESD\Plugins\EasyRoute\RouteException;
 use ESD\Plugins\EasyRoute\RouteTool\IRoute;
 use ESD\Plugins\Pack\ClientData;
 use ESD\Plugins\Pack\GetBoostSend;
-use Go\Aop\Aspect;
 use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\Around;
 
-class RouteAspect implements Aspect
+class RouteAspect extends OrderAspect
 {
     use GetLogger;
     use GetBoostSend;
@@ -233,5 +233,13 @@ class RouteAspect implements Aspect
         } else {
             return $this->controllers[$controllerName];
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return "RouteAspect";
     }
 }
