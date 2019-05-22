@@ -17,13 +17,14 @@ trait GetBoostSend
      * 增强send，可以根据不同协议转码发送
      * @param $fd
      * @param $data
+     * @param $topic
      * @return bool
      */
-    public function autoBoostSend($fd, $data): bool
+    public function autoBoostSend($fd, $data, $topic = null): bool
     {
         $easyRoutePlugin = Server::$instance->getPlugManager()->getPlug(EasyRoutePlugin::class);
         if ($easyRoutePlugin instanceof EasyRoutePlugin) {
-            return $easyRoutePlugin->getRouteAspect()->autoBoostSend($fd, $data);
+            return $easyRoutePlugin->getRouteAspect()->autoBoostSend($fd, $data, $topic);
         }
         return false;
     }

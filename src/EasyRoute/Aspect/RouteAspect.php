@@ -277,14 +277,15 @@ class RouteAspect implements Aspect
      * 增强send，可以根据不同协议转码发送
      * @param $fd
      * @param $data
+     * @param null $topic
      * @return bool
      */
-    public function autoBoostSend($fd, $data): bool
+    public function autoBoostSend($fd, $data, $topic = null): bool
     {
         $clientInfo = Server::$instance->getClientInfo($fd);
         $easyRouteConfig = $this->easyRouteConfigs[$clientInfo->getServerPort()];
         $pack = $this->packTools[$easyRouteConfig->getPackTool()];
-        $data = $pack->pack($data, $easyRouteConfig);
+        $data = $pack->pack($data, $easyRouteConfig, $topic);
         if (Server::$instance->isEstablished($fd)) {
             return Server::$instance->wsPush($fd, $data, $easyRouteConfig->getWsOpcode());
         } else {
