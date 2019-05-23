@@ -10,6 +10,7 @@ namespace ESD\Plugins\EasyRoute\RouteTool;
 
 
 use ESD\BaseServer\Exception;
+use ESD\BaseServer\ParamException;
 use ESD\BaseServer\Plugins\Logger\GetLogger;
 use ESD\Plugins\EasyRoute\Annotation\ModelAttribute;
 use ESD\Plugins\EasyRoute\Annotation\PathVariable;
@@ -71,7 +72,9 @@ class AnnotationRoute implements IRoute
                     }
                     if ($annotation instanceof PathVariable) {
                         $result = $vars[$annotation->value] ?? null;
-                        if ($result == null) throw new Exception("path {$annotation->value} not find");
+                        if ($annotation->required) {
+                            if ($result == null) throw new ParamException("path {$annotation->value} not find");
+                        }
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestParam) {
                         if ($request == null) continue;
