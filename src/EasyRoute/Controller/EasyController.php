@@ -10,9 +10,12 @@ namespace ESD\Plugins\EasyRoute\Controller;
 
 
 use DI\Annotation\Inject;
+use ESD\BaseServer\ParamException;
 use ESD\BaseServer\Server\Beans\Request;
 use ESD\BaseServer\Server\Beans\Response;
+use ESD\Plugins\EasyRoute\RouteException;
 use ESD\Plugins\Pack\ClientData;
+use ESD\Plugins\Security\AccessDeniedException;
 use Monolog\Logger;
 
 abstract class EasyController implements IController
@@ -98,10 +101,12 @@ abstract class EasyController implements IController
                 $this->response->setStatus(404);
             }
             $msg = $e->getMessage();
-
-        }else if ($e instanceof AccessDeniedException){
+        }else if ($e instanceof AccessDeniedException) {
             $this->response->setStatus(401);
-            $msg = $e->getMessage();
+            $msg = '401 Access denied / ' . $e->getMessage();
+        }else if ($e instanceof ParamException){
+            $this->response->setStatus(400);
+            $msg = '400 Bad request / ' . $e->getMessage();
         }else{
             $this->response->setStatus(500);
             $msg = 'http 500 internal server error';
