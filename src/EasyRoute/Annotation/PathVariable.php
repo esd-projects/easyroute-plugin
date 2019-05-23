@@ -25,4 +25,8 @@ class PathVariable extends Annotation
      * @var string|null
      */
     public $param;
+    /**
+     * @var bool
+     */
+    public $required = false;
 }
