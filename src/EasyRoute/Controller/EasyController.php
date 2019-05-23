@@ -92,10 +92,10 @@ abstract class EasyController implements IController
      */
     public function onExceptionHandle(\Throwable $e)
     {
+        $this->response->addHeader("Content-Type", "text/html;charset=UTF-8");
         if($e instanceof  RouteException){
             if ($this->clientData->getResponse() != null) {
                 $this->response->setStatus(404);
-                $this->response->addHeader("Content-Type", "text/html;charset=UTF-8");
             }
             $msg = $e->getMessage();
         }else{
