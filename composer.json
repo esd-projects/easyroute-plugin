@@ -1,12 +1,16 @@
 {
   "require": {
-    "esd/base-server": "~0.1",
+    "esd/esd-core": "~0.1",
     "esd/aop-plugin": "~0.1",
     "esd/pack-plugin": "~0.1",
     "esd/annotations-scan-plugin": "~0.1",
     "esd/validate-plugin": "~0.1",
+
+    "nikic/fast-route": "^1.3",
+
     "ext-json": "*",
-    "nikic/fast-route": "^1.3"
+    "ext-simplexml": "*",
+    "ext-libxml": "*"
   },
   "autoload": {
     "psr-4": {

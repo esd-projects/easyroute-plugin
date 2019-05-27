@@ -9,8 +9,7 @@
 namespace ESD\Plugins\EasyRoute\Aspect;
 
 
-use ESD\BaseServer\Plugins\Logger\GetLogger;
-use ESD\BaseServer\Server\Server;
+use ESD\Core\Plugins\Logger\GetLogger;
 use ESD\Plugins\Aop\OrderAspect;
 use ESD\Plugins\EasyRoute\Controller\IController;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
@@ -58,7 +57,7 @@ class RouteAspect extends OrderAspect
         foreach ($this->easyRouteConfigs as $easyRouteConfig) {
             if (!isset($this->routeTools[$easyRouteConfig->getRouteTool()])) {
                 $className = $easyRouteConfig->getRouteTool();
-                $this->routeTools[$easyRouteConfig->getRouteTool()] = Server::$instance->getContainer()->get($className);
+                $this->routeTools[$easyRouteConfig->getRouteTool()] = DIget($className);
             }
         }
         $this->routeConfig = $routeConfig;
@@ -68,9 +67,8 @@ class RouteAspect extends OrderAspect
      * around onHttpRequest
      *
      * @param MethodInvocation $invocation Invocation
-     * @throws \ESD\BaseServer\Exception
      * @throws \Throwable
-     * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onHttpRequest(*))")
+     * @Around("within(ESD\Core\Server\Port\IServerPort+) && execution(public **->onHttpRequest(*))")
      */
     protected function aroundHttpRequest(MethodInvocation $invocation)
     {
@@ -106,9 +104,8 @@ class RouteAspect extends OrderAspect
      * around onTcpReceive
      *
      * @param MethodInvocation $invocation Invocation
-     * @throws \ESD\BaseServer\Exception
      * @throws \Throwable
-     * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onTcpReceive(*))")
+     * @Around("within(ESD\Core\Server\Port\IServerPort+) && execution(public **->onTcpReceive(*))")
      */
     protected function aroundTcpReceive(MethodInvocation $invocation)
     {
@@ -143,9 +140,8 @@ class RouteAspect extends OrderAspect
      * around onWsMessage
      *
      * @param MethodInvocation $invocation Invocation
-     * @throws \ESD\BaseServer\Exception
      * @throws \Throwable
-     * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onWsMessage(*))")
+     * @Around("within(ESD\Core\Server\Port\IServerPort+) && execution(public **->onWsMessage(*))")
      */
     protected function aroundWsMessage(MethodInvocation $invocation)
     {
@@ -180,7 +176,7 @@ class RouteAspect extends OrderAspect
      * around onUdpPacket
      *
      * @param MethodInvocation $invocation Invocation
-     * @Around("within(ESD\BaseServer\Server\IServerPort+) && execution(public **->onUdpPacket(*))")
+     * @Around("within(ESD\Core\Server\Port\IServerPort+) && execution(public **->onUdpPacket(*))")
      * @throws \Throwable
      */
     protected function aroundUdpPacket(MethodInvocation $invocation)
@@ -220,7 +216,7 @@ class RouteAspect extends OrderAspect
     {
         if (!isset($this->controllers[$controllerName])) {
             if (class_exists($controllerName)) {
-                $controller = Server::$instance->getContainer()->get($controllerName);
+                $controller = DIget($controllerName);
                 if ($controller instanceof IController) {
                     $this->controllers[$controllerName] = $controller;
                     return $controller;

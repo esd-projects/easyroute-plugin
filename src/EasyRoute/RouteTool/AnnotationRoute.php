@@ -9,9 +9,8 @@
 namespace ESD\Plugins\EasyRoute\RouteTool;
 
 
-use ESD\BaseServer\Exception;
-use ESD\BaseServer\ParamException;
-use ESD\BaseServer\Plugins\Logger\GetLogger;
+use ESD\Core\Exception;
+use ESD\Core\Plugins\Logger\GetLogger;
 use ESD\Plugins\EasyRoute\Annotation\ModelAttribute;
 use ESD\Plugins\EasyRoute\Annotation\PathVariable;
 use ESD\Plugins\EasyRoute\Annotation\RequestBody;
@@ -45,6 +44,7 @@ class AnnotationRoute implements IRoute
      * @throws RouteException
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
+     * @throws \ESD\Plugins\Validate\ValidationException
      * @throws \ReflectionException
      */
     public function handleClientData(ClientData $data, EasyRouteConfig $easyRouteConfig): bool
@@ -65,7 +65,7 @@ class AnnotationRoute implements IRoute
                 $this->clientData->setControllerName($handler[0]->name);
                 $this->clientData->setMethodName($handler[1]->name);
                 $params = [];
-                $methodReflection = $handler[1];
+                $methodReflection = $handler[1]->getReflectionMethod();
                 foreach (EasyRoutePlugin::$instance->getScanClass()->getCachedReader()->getMethodAnnotations($methodReflection) as $annotation) {
                     if ($annotation instanceof ResponseBody) {
                         $data->getResponse()->addHeader("Content-Type", $annotation->value);
@@ -73,7 +73,7 @@ class AnnotationRoute implements IRoute
                     if ($annotation instanceof PathVariable) {
                         $result = $vars[$annotation->value] ?? null;
                         if ($annotation->required) {
-                            if ($result == null) throw new ParamException("path {$annotation->value} not find");
+                            if ($result == null) throw new RouteException("path {$annotation->value} not find");
                         }
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestParam) {

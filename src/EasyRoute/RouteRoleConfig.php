@@ -9,7 +9,7 @@
 namespace ESD\Plugins\EasyRoute;
 
 
-use ESD\BaseServer\Plugins\Config\BaseConfig;
+use ESD\Core\Plugins\Config\BaseConfig;
 
 class RouteRoleConfig extends BaseConfig
 {

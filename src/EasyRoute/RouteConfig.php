@@ -9,8 +9,9 @@
 namespace ESD\Plugins\EasyRoute;
 
 
-use ESD\BaseServer\Plugins\Config\BaseConfig;
-use ESD\BaseServer\Server\Server;
+use ESD\Core\Plugins\Config\BaseConfig;
+use ESD\Core\Server\Server;
+use ReflectionException;
 
 class RouteConfig extends BaseConfig
 {
@@ -39,7 +40,7 @@ class RouteConfig extends BaseConfig
 
     /**
      * @param RouteRoleConfig[] $routeRoles
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function setRouteRoles(array $routeRoles): void
     {
@@ -58,7 +59,7 @@ class RouteConfig extends BaseConfig
     public function addRouteRole(RouteRoleConfig $roleConfig)
     {
         if (array_key_exists($roleConfig->getName(), $this->routeRoles)) {
-            Server::$instance->getLog()->warn("重复的路由：{$roleConfig->getName()}");
+            Server::$instance->getLog()->warning("重复的路由：{$roleConfig->getName()}");
         }
         $this->routeRoles[$roleConfig->getName()] = $roleConfig;
     }

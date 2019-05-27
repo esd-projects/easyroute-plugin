@@ -9,7 +9,7 @@
 namespace ESD\Plugins\EasyRoute;
 
 
-use ESD\BaseServer\Exception;
+use ESD\Core\Exception;
 use Throwable;
 
 class RouteException extends Exception

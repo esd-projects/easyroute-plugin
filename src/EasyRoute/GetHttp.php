@@ -9,8 +9,8 @@
 namespace ESD\Plugins\EasyRoute;
 
 
-use ESD\BaseServer\Server\Beans\Request;
-use ESD\BaseServer\Server\Beans\Response;
+use ESD\Core\Server\Beans\Request;
+use ESD\Core\Server\Beans\Response;
 
 trait GetHttp
 {
