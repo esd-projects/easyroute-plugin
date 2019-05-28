@@ -107,9 +107,7 @@ class EasyRoutePlugin extends AbstractPlugin
             $this->easyRouteConfigs[$easyRouteConfig->getPort()] = $easyRouteConfig;
         }
         $this->routeConfig->merge();
-        $serverConfig = Server::$instance->getServerConfig();
         $aopConfig = DIget(AopConfig::class);
-        $aopConfig->addIncludePath($serverConfig->getVendorDir() . "/esd/base-server");
         $this->routeAspect = new RouteAspect($this->easyRouteConfigs, $this->routeConfig);
         $aopConfig->addAspect($this->routeAspect);
     }
