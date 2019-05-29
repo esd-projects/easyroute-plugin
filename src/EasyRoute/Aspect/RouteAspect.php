@@ -10,6 +10,7 @@ namespace ESD\Plugins\EasyRoute\Aspect;
 
 
 use ESD\Core\Plugins\Logger\GetLogger;
+use ESD\Core\Server\Server;
 use ESD\Plugins\Aop\OrderAspect;
 use ESD\Plugins\EasyRoute\Controller\IController;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
@@ -85,6 +86,7 @@ class RouteAspect extends OrderAspect
             if (is_array($result) || is_object($result)) {
                 $result = json_encode($result, JSON_UNESCAPED_UNICODE);
             }
+            $clientData->getResponse()->addHeader('Server', Server::$instance->getServerConfig()->getName());
             $clientData->getResponse()->append($result);
         } catch (\Throwable $e) {
             try {
