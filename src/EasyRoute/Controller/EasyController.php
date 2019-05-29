@@ -10,6 +10,7 @@ namespace ESD\Plugins\EasyRoute\Controller;
 
 
 use DI\Annotation\Inject;
+use ESD\Core\ParamException;
 use ESD\Core\Server\Beans\Request;
 use ESD\Core\Server\Beans\Response;
 use ESD\Plugins\EasyRoute\RouteException;
@@ -99,9 +100,12 @@ abstract class EasyController implements IController
 
             if($e instanceof  RouteException) {
                 $msg = '404 Not found / ' . $e->getMessage();
+            }elseif($e instanceof ParamException){
+                $this->response->setStatus(400);
+                $msg = '400 Bad request / ' . $e->getMessage();
             }else{
                 $this->response->setStatus(500);
-                $msg = 'http 500 internal server error';
+                $msg = '500 internal server error';
             }
             return $msg;
         }else{
