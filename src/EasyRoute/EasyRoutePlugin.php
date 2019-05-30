@@ -13,6 +13,7 @@ use ESD\Core\Context\Context;
 use ESD\Core\PlugIn\AbstractPlugin;
 use ESD\Core\PlugIn\PluginInterfaceManager;
 use ESD\Core\Server\Config\PortConfig;
+use ESD\Core\Server\Process\Process;
 use ESD\Core\Server\Server;
 use ESD\Plugins\AnnotationsScan\AnnotationsScanPlugin;
 use ESD\Plugins\AnnotationsScan\ScanClass;
@@ -161,7 +162,9 @@ class EasyRoutePlugin extends AbstractPlugin
         foreach ($couldPortNames as $portName) {
             $type = strtoupper($routeRole->getType());
             $port = Server::$instance->getPortManager()->getPortConfigs()[$portName]->getPort();
-            Server::$instance->getLog()->info("Mapping $port:{$type} {$routeRole->getRoute()} to $reflectionClass->name::$reflectionMethod->name");
+            if (Server::$instance->getProcessManager()->getCurrentProcess()->getProcessId() == 0) {
+                Server::$instance->getLog()->info("Mapping $port:{$type} {$routeRole->getRoute()} to $reflectionClass->name::$reflectionMethod->name");
+            }
             $r->addRoute("$port:{$type}", $routeRole->getRoute(), [$reflectionClass, $reflectionMethod]);
         }
     }
@@ -177,9 +180,23 @@ class EasyRoutePlugin extends AbstractPlugin
     {
         $this->routeConfig->merge();
         $this->setToDIContainer(ClientData::class, new ClientDataProxy());
+    }
+
+    /**
+     * 在进程启动前
+     * @param Context $context
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \ESD\Core\Plugins\Config\ConfigException
+     */
+    public function beforeProcessStart(Context $context)
+    {
+        if (Server::$instance->getProcessManager()->getCurrentProcess()->getProcessType() != Process::PROCESS_TYPE_WORKER) {
+            $this->ready();
+            return;
+        }
         $this->scanClass = DIget(ScanClass::class);
         $reflectionMethods = $this->scanClass->findMethodsByAnn(RequestMapping::class);
-
         $this->dispatcher = simpleDispatcher(function (RouteCollector $r) use ($reflectionMethods) {
             //添加配置里的
             foreach ($this->routeConfig->getRouteRoles() as $routeRole) {
@@ -227,14 +244,6 @@ class EasyRoutePlugin extends AbstractPlugin
             }
         });
         $this->routeConfig->merge();
-    }
-
-    /**
-     * 在进程启动前
-     * @param Context $context
-     */
-    public function beforeProcessStart(Context $context)
-    {
         $this->ready();
     }
 
