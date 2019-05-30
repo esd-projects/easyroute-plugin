@@ -22,6 +22,7 @@ use ESD\Plugins\EasyRoute\Annotation\RequestRawXml;
 use ESD\Plugins\EasyRoute\Annotation\ResponseBody;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
 use ESD\Plugins\EasyRoute\EasyRoutePlugin;
+use ESD\Plugins\EasyRoute\MethodNotAllowedException;
 use ESD\Plugins\EasyRoute\RouteException;
 use ESD\Plugins\Pack\ClientData;
 use ESD\Plugins\Validate\Annotation\ValidatedFilter;
@@ -41,9 +42,8 @@ class AnnotationRoute implements IRoute
      * @param EasyRouteConfig $easyRouteConfig
      * @return bool
      * @throws Exception
+     * @throws MethodNotAllowedException
      * @throws RouteException
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      * @throws \ESD\Plugins\Validate\ValidationException
      * @throws \ReflectionException
      */
@@ -58,7 +58,7 @@ class AnnotationRoute implements IRoute
                 throw new RouteException("{$this->clientData->getPath()} 404 Not found");
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
-                throw new RouteException("Method not allowed");
+                throw new MethodNotAllowedException("Method not allowed");
             case Dispatcher::FOUND: // 找到对应的方法
                 $handler = $routeInfo[1]; // 获得处理函数
                 $vars = $routeInfo[2]; // 获取请求参数
