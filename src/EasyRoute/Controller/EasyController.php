@@ -88,6 +88,13 @@ abstract class EasyController implements IController
     }
 
     /**
+     * 找不到方法时调用
+     * @param $methodName
+     * @return mixed
+     */
+    abstract protected function defaultMethod(?string $methodName);
+
+    /**
      * 处理异常
      * @param $e
      * @return mixed
@@ -99,28 +106,21 @@ abstract class EasyController implements IController
             $this->response->setStatus(404);
             $this->response->addHeader("Content-Type", "text/html;charset=UTF-8");
 
-            if($e instanceof  RouteException) {
+            if ($e instanceof RouteException) {
                 $msg = '404 Not found / ' . $e->getMessage();
-            }elseif($e instanceof ParamException) {
+            } elseif ($e instanceof ParamException) {
                 $this->response->setStatus(400);
                 $msg = '400 Bad request / ' . $e->getMessage();
-            }else if ($e instanceof MethodNotAllowedException){
+            } else if ($e instanceof MethodNotAllowedException) {
                 $this->response->setStatus(405);
                 $msg = '405 method not allowed';
-            }else{
+            } else {
                 $this->response->setStatus(500);
                 $msg = '500 internal server error';
             }
             return $msg;
-        }else{
+        } else {
             return $e->getMessage();
         }
     }
-
-    /**
-     * 找不到方法时调用
-     * @param $methodName
-     * @return mixed
-     */
-    abstract protected function defaultMethod(?string $methodName);
 }

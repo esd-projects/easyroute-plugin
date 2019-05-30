@@ -49,8 +49,6 @@ class RouteAspect extends OrderAspect
      * RouteAspect constructor.
      * @param $easyRouteConfigs
      * @param $routeConfig
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      */
     public function __construct($easyRouteConfigs, RouteConfig $routeConfig)
     {
@@ -62,6 +60,14 @@ class RouteAspect extends OrderAspect
             }
         }
         $this->routeConfig = $routeConfig;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return "RouteAspect";
     }
 
     /**
@@ -100,6 +106,30 @@ class RouteAspect extends OrderAspect
             throw $e;
         }
         return;
+    }
+
+    /**
+     * @param $controllerName
+     * @return IController
+     * @throws RouteException
+     */
+    private function getController($controllerName)
+    {
+        if (!isset($this->controllers[$controllerName])) {
+            if (class_exists($controllerName)) {
+                $controller = DIget($controllerName);
+                if ($controller instanceof IController) {
+                    $this->controllers[$controllerName] = $controller;
+                    return $controller;
+                } else {
+                    throw new RouteException("类{$controllerName}应该继承IController");
+                }
+            } else {
+                throw new RouteException("没有找到类$controllerName");
+            }
+        } else {
+            return $this->controllers[$controllerName];
+        }
     }
 
     /**
@@ -205,39 +235,5 @@ class RouteAspect extends OrderAspect
             throw $e;
         }
         return;
-    }
-
-    /**
-     * @param $controllerName
-     * @return IController
-     * @throws RouteException
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
-     */
-    private function getController($controllerName)
-    {
-        if (!isset($this->controllers[$controllerName])) {
-            if (class_exists($controllerName)) {
-                $controller = DIget($controllerName);
-                if ($controller instanceof IController) {
-                    $this->controllers[$controllerName] = $controller;
-                    return $controller;
-                } else {
-                    throw new RouteException("类{$controllerName}应该继承IController");
-                }
-            } else {
-                throw new RouteException("没有找到类$controllerName");
-            }
-        } else {
-            return $this->controllers[$controllerName];
-        }
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return "RouteAspect";
     }
 }

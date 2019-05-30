@@ -42,10 +42,7 @@ class AnnotationRoute implements IRoute
      * @return bool
      * @throws Exception
      * @throws RouteException
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      * @throws \ESD\Plugins\Validate\ValidationException
-     * @throws \ReflectionException
      */
     public function handleClientData(ClientData $data, EasyRouteConfig $easyRouteConfig): bool
     {

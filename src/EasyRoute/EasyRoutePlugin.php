@@ -60,9 +60,6 @@ class EasyRoutePlugin extends AbstractPlugin
     /**
      * EasyRoutePlugin constructor.
      * @param RouteConfig|null $routeConfig
-     * @throws \DI\DependencyException
-     * @throws \ReflectionException
-     * @throws \DI\NotFoundException
      */
     public function __construct(?RouteConfig $routeConfig = null)
     {
@@ -90,11 +87,8 @@ class EasyRoutePlugin extends AbstractPlugin
     /**
      * @param Context $context
      * @return mixed|void
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      * @throws \ESD\Core\Plugins\Config\ConfigException
      * @throws \ESD\Core\Exception
-     * @throws \ReflectionException
      */
     public function init(Context $context)
     {
@@ -116,10 +110,7 @@ class EasyRoutePlugin extends AbstractPlugin
     /**
      * @param PluginInterfaceManager $pluginInterfaceManager
      * @return mixed|void
-     * @throws \DI\DependencyException
      * @throws \ESD\Core\Exception
-     * @throws \ReflectionException
-     * @throws \DI\NotFoundException
      */
     public function onAdded(PluginInterfaceManager $pluginInterfaceManager)
     {
@@ -130,50 +121,8 @@ class EasyRoutePlugin extends AbstractPlugin
     }
 
     /**
-     * @param RouteRoleConfig $routeRole
-     * @param RouteCollector $r
-     * @param $reflectionClass
-     * @param $reflectionMethod
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
-     * @throws \ESD\Core\Plugins\Config\ConfigException
-     * @throws \ReflectionException
-     */
-    protected function addRoute(RouteRoleConfig $routeRole, RouteCollector $r, $reflectionClass, $reflectionMethod)
-    {
-        $couldPortNames = [];
-        if (!empty($routeRole->getPortTypes())) {
-            foreach ($routeRole->getPortTypes() as $portType) {
-                foreach ($this->easyRouteConfigs as $easyRouteConfig) {
-                    if ($easyRouteConfig->getBaseType() == $portType) {
-                        $couldPortNames[] = $easyRouteConfig->getName();
-                    }
-                }
-            }
-        } else {
-            foreach ($this->easyRouteConfigs as $easyRouteConfig) {
-                $couldPortNames[] = $easyRouteConfig->getName();
-            }
-        }
-        //取并集
-        if (!empty($routeRole->getPortNames())) {
-            $couldPortNames = array_intersect($couldPortNames, $routeRole->getPortNames());
-        }
-        foreach ($couldPortNames as $portName) {
-            $type = strtoupper($routeRole->getType());
-            $port = Server::$instance->getPortManager()->getPortConfigs()[$portName]->getPort();
-            if (Server::$instance->getProcessManager()->getCurrentProcess()->getProcessId() == 0) {
-                Server::$instance->getLog()->info("Mapping $port:{$type} {$routeRole->getRoute()} to $reflectionClass->name::$reflectionMethod->name");
-            }
-            $r->addRoute("$port:{$type}", $routeRole->getRoute(), [$reflectionClass, $reflectionMethod]);
-        }
-    }
-
-    /**
      * 在服务启动前
      * @param Context $context
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      * @throws \ESD\Core\Plugins\Config\ConfigException
      */
     public function beforeServerStart(Context $context)
@@ -185,8 +134,6 @@ class EasyRoutePlugin extends AbstractPlugin
     /**
      * 在进程启动前
      * @param Context $context
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      * @throws \ESD\Core\Plugins\Config\ConfigException
      */
     public function beforeProcessStart(Context $context)
@@ -245,6 +192,43 @@ class EasyRoutePlugin extends AbstractPlugin
         });
         $this->routeConfig->merge();
         $this->ready();
+    }
+
+    /**
+     * @param RouteRoleConfig $routeRole
+     * @param RouteCollector $r
+     * @param $reflectionClass
+     * @param $reflectionMethod
+     * @throws \ESD\Core\Plugins\Config\ConfigException
+     */
+    protected function addRoute(RouteRoleConfig $routeRole, RouteCollector $r, $reflectionClass, $reflectionMethod)
+    {
+        $couldPortNames = [];
+        if (!empty($routeRole->getPortTypes())) {
+            foreach ($routeRole->getPortTypes() as $portType) {
+                foreach ($this->easyRouteConfigs as $easyRouteConfig) {
+                    if ($easyRouteConfig->getBaseType() == $portType) {
+                        $couldPortNames[] = $easyRouteConfig->getName();
+                    }
+                }
+            }
+        } else {
+            foreach ($this->easyRouteConfigs as $easyRouteConfig) {
+                $couldPortNames[] = $easyRouteConfig->getName();
+            }
+        }
+        //取并集
+        if (!empty($routeRole->getPortNames())) {
+            $couldPortNames = array_intersect($couldPortNames, $routeRole->getPortNames());
+        }
+        foreach ($couldPortNames as $portName) {
+            $type = strtoupper($routeRole->getType());
+            $port = Server::$instance->getPortManager()->getPortConfigs()[$portName]->getPort();
+            if (Server::$instance->getProcessManager()->getCurrentProcess()->getProcessId() == 0) {
+                Server::$instance->getLog()->info("Mapping $port:{$type} {$routeRole->getRoute()} to $reflectionClass->name::$reflectionMethod->name");
+            }
+            $r->addRoute("$port:{$type}", $routeRole->getRoute(), [$reflectionClass, $reflectionMethod]);
+        }
     }
 
     /**

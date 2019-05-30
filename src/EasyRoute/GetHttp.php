@@ -14,12 +14,12 @@ use ESD\Core\Server\Beans\Response;
 
 trait GetHttp
 {
-    public function getRequest():Request
+    public function getRequest(): Request
     {
-       return getDeepContextValueByClassName(Request::class);
+        return getDeepContextValueByClassName(Request::class);
     }
 
-    public function getResponse():Response
+    public function getResponse(): Response
     {
         return getDeepContextValueByClassName(Response::class);
     }
