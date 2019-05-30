@@ -9,7 +9,7 @@
 namespace ESD\Plugins\EasyRoute\RouteTool;
 
 
-use ESD\Core\Exception;
+use ESD\Core\ParamException;
 use ESD\Core\Plugins\Logger\GetLogger;
 use ESD\Plugins\EasyRoute\Annotation\ModelAttribute;
 use ESD\Plugins\EasyRoute\Annotation\PathVariable;
@@ -40,9 +40,10 @@ class AnnotationRoute implements IRoute
      * @param ClientData $data
      * @param EasyRouteConfig $easyRouteConfig
      * @return bool
-     * @throws Exception
+     * @throws ParamException
      * @throws RouteException
      * @throws \ESD\Plugins\Validate\ValidationException
+     * @throws \ReflectionException
      */
     public function handleClientData(ClientData $data, EasyRouteConfig $easyRouteConfig): bool
     {
@@ -65,7 +66,7 @@ class AnnotationRoute implements IRoute
                 $methodReflection = $handler[1]->getReflectionMethod();
                 foreach (EasyRoutePlugin::$instance->getScanClass()->getCachedReader()->getMethodAnnotations($methodReflection) as $annotation) {
                     if ($annotation instanceof ResponseBody) {
-                        $data->getResponse()->addHeader("Content-Type", $annotation->value);
+                        $data->getResponse()->withHeader("Content-Type", $annotation->value);
                     }
                     if ($annotation instanceof PathVariable) {
                         $result = $vars[$annotation->value] ?? null;
@@ -75,24 +76,22 @@ class AnnotationRoute implements IRoute
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestParam) {
                         if ($request == null) continue;
-                        if ($annotation->required) {
-                            $result = $request->getGetRequire($annotation->value);
-                        } else {
-                            $result = $request->getGet($annotation->value);
+                        $result = $request->query($annotation->value);
+                        if ($annotation->required && $result == null) {
+                            throw new ParamException("require params $annotation->value");
                         }
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestFormData) {
                         if ($request == null) continue;
-                        if ($annotation->required) {
-                            $result = $request->getPostRequire($annotation->value);
-                        } else {
-                            $result = $request->getPost($annotation->value);
+                        $result = $request->post($annotation->value);
+                        if ($annotation->required && $result == null) {
+                            throw new ParamException("require params $annotation->value");
                         }
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestRawJson || $annotation instanceof RequestBody) {
                         if ($request == null) continue;
-                        if (!$json = json_decode($request->getRawContent(), true)) {
-                            $this->warning('RequestRawJson errror, raw:' . $request->getRawContent());
+                        if (!$json = json_decode($request->getBody()->getContents(), true)) {
+                            $this->warning('RequestRawJson errror, raw:' . $request->getBody()->getContents());
                             throw new RouteException('RawJson Format error');
                         }
                         $params[$annotation->value] = $json;
@@ -101,13 +100,13 @@ class AnnotationRoute implements IRoute
                         $params[$annotation->value] = $request->post();
                     } else if ($annotation instanceof RequestRaw) {
                         if ($request == null) continue;
-                        $raw = $request->getRawContent();
+                        $raw = $request->getBody()->getContents();
                         $params[$annotation->value] = $raw;
                     } else if ($annotation instanceof RequestRawXml) {
                         if ($request == null) continue;
-                        $raw = $request->getRawContent();
+                        $raw = $request->getBody()->getContents();
                         if (!$xml = simplexml_load_string($raw, 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS)) {
-                            $this->warning('RequestRawXml errror, raw:' . $request->getRawContent());
+                            $this->warning('RequestRawXml errror, raw:' . $request->getBody()->getContents());
                             throw new RouteException('RawXml Format error');
                         }
                         $params[$annotation->value] = json_decode(json_encode($xml), true);
