@@ -13,6 +13,7 @@ use DI\Annotation\Inject;
 use ESD\Core\ParamException;
 use ESD\Core\Server\Beans\Request;
 use ESD\Core\Server\Beans\Response;
+use ESD\Plugins\EasyRoute\MethodNotAllowedException;
 use ESD\Plugins\EasyRoute\RouteException;
 use ESD\Plugins\Pack\ClientData;
 use Psr\Log\LoggerInterface;
@@ -100,9 +101,12 @@ abstract class EasyController implements IController
 
             if($e instanceof  RouteException) {
                 $msg = '404 Not found / ' . $e->getMessage();
-            }elseif($e instanceof ParamException){
+            }elseif($e instanceof ParamException) {
                 $this->response->setStatus(400);
                 $msg = '400 Bad request / ' . $e->getMessage();
+            }else if ($e instanceof MethodNotAllowedException){
+                $this->response->setStatus(405);
+                $msg = '405 method not allowed';
             }else{
                 $this->response->setStatus(500);
                 $msg = '500 internal server error';
