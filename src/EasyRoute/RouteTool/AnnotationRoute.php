@@ -9,7 +9,7 @@
 namespace ESD\Plugins\EasyRoute\RouteTool;
 
 
-use ESD\Core\Exception;
+use ESD\Core\ParamException;
 use ESD\Core\Plugins\Logger\GetLogger;
 use ESD\Plugins\EasyRoute\Annotation\ModelAttribute;
 use ESD\Plugins\EasyRoute\Annotation\PathVariable;
@@ -22,7 +22,6 @@ use ESD\Plugins\EasyRoute\Annotation\RequestRawXml;
 use ESD\Plugins\EasyRoute\Annotation\ResponseBody;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
 use ESD\Plugins\EasyRoute\EasyRoutePlugin;
-use ESD\Plugins\EasyRoute\MethodNotAllowedException;
 use ESD\Plugins\EasyRoute\RouteException;
 use ESD\Plugins\Pack\ClientData;
 use ESD\Plugins\Validate\Annotation\ValidatedFilter;
@@ -41,8 +40,7 @@ class AnnotationRoute implements IRoute
      * @param ClientData $data
      * @param EasyRouteConfig $easyRouteConfig
      * @return bool
-     * @throws Exception
-     * @throws MethodNotAllowedException
+     * @throws ParamException
      * @throws RouteException
      * @throws \ESD\Plugins\Validate\ValidationException
      * @throws \ReflectionException
@@ -58,7 +56,7 @@ class AnnotationRoute implements IRoute
                 throw new RouteException("{$this->clientData->getPath()} 404 Not found");
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
-                throw new MethodNotAllowedException("Method not allowed");
+                throw new RouteException("Method not allowed");
             case Dispatcher::FOUND: // 找到对应的方法
                 $handler = $routeInfo[1]; // 获得处理函数
                 $vars = $routeInfo[2]; // 获取请求参数
@@ -68,7 +66,7 @@ class AnnotationRoute implements IRoute
                 $methodReflection = $handler[1]->getReflectionMethod();
                 foreach (EasyRoutePlugin::$instance->getScanClass()->getCachedReader()->getMethodAnnotations($methodReflection) as $annotation) {
                     if ($annotation instanceof ResponseBody) {
-                        $data->getResponse()->addHeader("Content-Type", $annotation->value);
+                        $data->getResponse()->withHeader("Content-Type", $annotation->value);
                     }
                     if ($annotation instanceof PathVariable) {
                         $result = $vars[$annotation->value] ?? null;
@@ -78,24 +76,22 @@ class AnnotationRoute implements IRoute
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestParam) {
                         if ($request == null) continue;
-                        if ($annotation->required) {
-                            $result = $request->getGetRequire($annotation->value);
-                        } else {
-                            $result = $request->getGet($annotation->value);
+                        $result = $request->query($annotation->value);
+                        if ($annotation->required && $result == null) {
+                            throw new ParamException("require params $annotation->value");
                         }
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestFormData) {
                         if ($request == null) continue;
-                        if ($annotation->required) {
-                            $result = $request->getPostRequire($annotation->value);
-                        } else {
-                            $result = $request->getPost($annotation->value);
+                        $result = $request->post($annotation->value);
+                        if ($annotation->required && $result == null) {
+                            throw new ParamException("require params $annotation->value");
                         }
                         $params[$annotation->param ?? $annotation->value] = $result;
                     } else if ($annotation instanceof RequestRawJson || $annotation instanceof RequestBody) {
                         if ($request == null) continue;
-                        if (!$json = json_decode($request->getRawContent(), true)) {
-                            $this->warning('RequestRawJson errror, raw:' . $request->getRawContent());
+                        if (!$json = json_decode($request->getBody()->getContents(), true)) {
+                            $this->warning('RequestRawJson errror, raw:' . $request->getBody()->getContents());
                             throw new RouteException('RawJson Format error');
                         }
                         $params[$annotation->value] = $json;
@@ -104,13 +100,13 @@ class AnnotationRoute implements IRoute
                         $params[$annotation->value] = $request->post();
                     } else if ($annotation instanceof RequestRaw) {
                         if ($request == null) continue;
-                        $raw = $request->getRawContent();
+                        $raw = $request->getBody()->getContents();
                         $params[$annotation->value] = $raw;
                     } else if ($annotation instanceof RequestRawXml) {
                         if ($request == null) continue;
-                        $raw = $request->getRawContent();
+                        $raw = $request->getBody()->getContents();
                         if (!$xml = simplexml_load_string($raw, 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS)) {
-                            $this->warning('RequestRawXml errror, raw:' . $request->getRawContent());
+                            $this->warning('RequestRawXml errror, raw:' . $request->getBody()->getContents());
                             throw new RouteException('RawXml Format error');
                         }
                         $params[$annotation->value] = json_decode(json_encode($xml), true);

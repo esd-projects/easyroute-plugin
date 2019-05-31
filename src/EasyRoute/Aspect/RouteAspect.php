@@ -49,8 +49,6 @@ class RouteAspect extends OrderAspect
      * RouteAspect constructor.
      * @param $easyRouteConfigs
      * @param $routeConfig
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
      */
     public function __construct($easyRouteConfigs, RouteConfig $routeConfig)
     {
@@ -65,6 +63,14 @@ class RouteAspect extends OrderAspect
     }
 
     /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return "RouteAspect";
+    }
+
+    /**
      * around onHttpRequest
      *
      * @param MethodInvocation $invocation Invocation
@@ -76,6 +82,9 @@ class RouteAspect extends OrderAspect
         $abstractServerPort = $invocation->getThis();
         $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
         setContextValue("EasyRouteConfig", $easyRouteConfig);
+        /**
+         * @var $clientData ClientData
+         */
         $clientData = getContextValueByClassName(ClientData::class);
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
@@ -86,20 +95,44 @@ class RouteAspect extends OrderAspect
             if (is_array($result) || is_object($result)) {
                 $result = json_encode($result, JSON_UNESCAPED_UNICODE);
             }
-            $clientData->getResponse()->addHeader('Server', Server::$instance->getServerConfig()->getName());
-            $clientData->getResponse()->append($result);
+            $clientData->getResponse()->withHeader('Server', Server::$instance->getServerConfig()->getName());
+            $clientData->getResponse()->appendBody($result);
         } catch (\Throwable $e) {
             try {
                 //这里的错误会移交给IndexController处理
                 $controllerInstance = $this->getController($this->routeConfig->getErrorControllerName());
                 $controllerInstance->initialization($routeTool->getControllerName(), $routeTool->getMethodName());
-                $clientData->getResponse()->append($controllerInstance->onExceptionHandle($e));
+                $clientData->getResponse()->appendBody($controllerInstance->onExceptionHandle($e));
             } catch (\Throwable $e) {
                 $this->warn($e);
             }
             throw $e;
         }
         return;
+    }
+
+    /**
+     * @param $controllerName
+     * @return IController
+     * @throws RouteException
+     */
+    private function getController($controllerName)
+    {
+        if (!isset($this->controllers[$controllerName])) {
+            if (class_exists($controllerName)) {
+                $controller = DIget($controllerName);
+                if ($controller instanceof IController) {
+                    $this->controllers[$controllerName] = $controller;
+                    return $controller;
+                } else {
+                    throw new RouteException("类{$controllerName}应该继承IController");
+                }
+            } else {
+                throw new RouteException("没有找到类$controllerName");
+            }
+        } else {
+            return $this->controllers[$controllerName];
+        }
     }
 
     /**
@@ -114,6 +147,9 @@ class RouteAspect extends OrderAspect
         $abstractServerPort = $invocation->getThis();
         $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
         setContextValue("EasyRouteConfig", $easyRouteConfig);
+        /**
+         * @var $clientData ClientData
+         */
         $clientData = getContextValueByClassName(ClientData::class);
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
@@ -150,6 +186,9 @@ class RouteAspect extends OrderAspect
         $abstractServerPort = $invocation->getThis();
         $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
         setContextValue("EasyRouteConfig", $easyRouteConfig);
+        /**
+         * @var $clientData ClientData
+         */
         $clientData = getContextValueByClassName(ClientData::class);
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
@@ -185,6 +224,9 @@ class RouteAspect extends OrderAspect
     {
         $abstractServerPort = $invocation->getThis();
         $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
+        /**
+         * @var $clientData ClientData
+         */
         $clientData = getContextValueByClassName(ClientData::class);
         setContextValue("EasyRouteConfig", $easyRouteConfig);
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
@@ -205,39 +247,5 @@ class RouteAspect extends OrderAspect
             throw $e;
         }
         return;
-    }
-
-    /**
-     * @param $controllerName
-     * @return IController
-     * @throws RouteException
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
-     */
-    private function getController($controllerName)
-    {
-        if (!isset($this->controllers[$controllerName])) {
-            if (class_exists($controllerName)) {
-                $controller = DIget($controllerName);
-                if ($controller instanceof IController) {
-                    $this->controllers[$controllerName] = $controller;
-                    return $controller;
-                } else {
-                    throw new RouteException("类{$controllerName}应该继承IController");
-                }
-            } else {
-                throw new RouteException("没有找到类$controllerName");
-            }
-        } else {
-            return $this->controllers[$controllerName];
-        }
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return "RouteAspect";
     }
 }
