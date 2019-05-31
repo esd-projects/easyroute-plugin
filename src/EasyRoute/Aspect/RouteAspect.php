@@ -82,6 +82,9 @@ class RouteAspect extends OrderAspect
         $abstractServerPort = $invocation->getThis();
         $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
         setContextValue("EasyRouteConfig", $easyRouteConfig);
+        /**
+         * @var $clientData ClientData
+         */
         $clientData = getContextValueByClassName(ClientData::class);
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
@@ -92,14 +95,14 @@ class RouteAspect extends OrderAspect
             if (is_array($result) || is_object($result)) {
                 $result = json_encode($result, JSON_UNESCAPED_UNICODE);
             }
-            $clientData->getResponse()->addHeader('Server', Server::$instance->getServerConfig()->getName());
-            $clientData->getResponse()->append($result);
+            $clientData->getResponse()->withHeader('Server', Server::$instance->getServerConfig()->getName());
+            $clientData->getResponse()->appendBody($result);
         } catch (\Throwable $e) {
             try {
                 //这里的错误会移交给IndexController处理
                 $controllerInstance = $this->getController($this->routeConfig->getErrorControllerName());
                 $controllerInstance->initialization($routeTool->getControllerName(), $routeTool->getMethodName());
-                $clientData->getResponse()->append($controllerInstance->onExceptionHandle($e));
+                $clientData->getResponse()->appendBody($controllerInstance->onExceptionHandle($e));
             } catch (\Throwable $e) {
                 $this->warn($e);
             }
@@ -144,6 +147,9 @@ class RouteAspect extends OrderAspect
         $abstractServerPort = $invocation->getThis();
         $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
         setContextValue("EasyRouteConfig", $easyRouteConfig);
+        /**
+         * @var $clientData ClientData
+         */
         $clientData = getContextValueByClassName(ClientData::class);
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
@@ -180,6 +186,9 @@ class RouteAspect extends OrderAspect
         $abstractServerPort = $invocation->getThis();
         $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
         setContextValue("EasyRouteConfig", $easyRouteConfig);
+        /**
+         * @var $clientData ClientData
+         */
         $clientData = getContextValueByClassName(ClientData::class);
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
@@ -215,6 +224,9 @@ class RouteAspect extends OrderAspect
     {
         $abstractServerPort = $invocation->getThis();
         $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
+        /**
+         * @var $clientData ClientData
+         */
         $clientData = getContextValueByClassName(ClientData::class);
         setContextValue("EasyRouteConfig", $easyRouteConfig);
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];

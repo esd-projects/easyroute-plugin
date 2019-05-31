@@ -41,6 +41,11 @@ abstract class EasyController implements IController
      */
     protected $log;
 
+    public function __construct()
+    {
+
+    }
+
     /**
      * 调用方法
      * @param string|null $controllerName
@@ -103,19 +108,19 @@ abstract class EasyController implements IController
     public function onExceptionHandle(\Throwable $e)
     {
         if ($this->clientData->getResponse() != null) {
-            $this->response->setStatus(404);
-            $this->response->addHeader("Content-Type", "text/html;charset=UTF-8");
+            $this->response->withStatus(404);
+            $this->response->withHeader("Content-Type", "text/html;charset=UTF-8");
 
             if ($e instanceof RouteException) {
                 $msg = '404 Not found / ' . $e->getMessage();
             } elseif ($e instanceof ParamException) {
-                $this->response->setStatus(400);
+                $this->response->withStatus(400);
                 $msg = '400 Bad request / ' . $e->getMessage();
             } else if ($e instanceof MethodNotAllowedException) {
-                $this->response->setStatus(405);
+                $this->response->withStatus(405);
                 $msg = '405 method not allowed';
             } else {
-                $this->response->setStatus(500);
+                $this->response->withStatus(500);
                 $msg = '500 internal server error';
             }
             return $msg;
