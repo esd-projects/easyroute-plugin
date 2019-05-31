@@ -7,9 +7,6 @@
  */
 
 namespace ESD\Plugins\EasyRoute;
-
-
-namespace ESD\Plugins\EasyRoute;
 use ESD\Core\Server\Beans\Request;
 use ESD\Core\Server\Beans\Response;
 use ESD\Core\ParamException;
@@ -51,7 +48,6 @@ trait GetHttp
         return $this->paramsRequire($key,'query');
     }
 
-    
     public function inputRequire($key)
     {
         return $this->paramsRequire($key, 'input');
