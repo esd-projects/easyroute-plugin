@@ -87,6 +87,7 @@ class RouteAspect extends OrderAspect
          */
         $clientData = getContextValueByClassName(ClientData::class);
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
+        $clientData->getResponse()->withHeader('Server', Server::$instance->getServerConfig()->getName());
         try {
             $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
             if (!$result) return;
@@ -95,7 +96,6 @@ class RouteAspect extends OrderAspect
             if (is_array($result) || is_object($result)) {
                 $result = json_encode($result, JSON_UNESCAPED_UNICODE);
             }
-            $clientData->getResponse()->withHeader('Server', Server::$instance->getServerConfig()->getName());
             $clientData->getResponse()->appendBody($result);
         } catch (\Throwable $e) {
             try {
