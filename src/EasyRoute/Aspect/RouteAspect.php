@@ -89,22 +89,28 @@ class RouteAspect extends OrderAspect
          */
         $clientData = getContextValueByClassName(ClientData::class);
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
+        $clientData->getResponse()->withHeader('Server', Server::$instance->getServerConfig()->getName());
         try {
             $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
             if (!$result) return;
             $controllerInstance = $this->getController($routeTool->getControllerName());
             $result = $controllerInstance->handle($routeTool->getControllerName(), $routeTool->getMethodName(), $routeTool->getParams());
-            if (is_array($result) || is_object($result)) {
-                $result = json_encode($result, JSON_UNESCAPED_UNICODE);
+            if (!empty($result)) {
+                if (is_array($result) || is_object($result)) {
+                    $result = json_encode($result, JSON_UNESCAPED_UNICODE);
+                }
+                $clientData->getResponse()->append($result);
             }
-            $clientData->getResponse()->withHeader('Server', Server::$instance->getServerConfig()->getName());
-            $clientData->getResponse()->appendBody($result);
         } catch (\Throwable $e) {
             try {
                 //这里的错误会移交给IndexController处理
                 $controllerInstance = $this->getController($this->routeConfig->getErrorControllerName());
                 $controllerInstance->initialization($routeTool->getControllerName(), $routeTool->getMethodName());
-                $clientData->getResponse()->appendBody($controllerInstance->onExceptionHandle($e));
+
+                $result = $controllerInstance->onExceptionHandle($e);
+                if (!empty($result)) {
+                    $clientData->getResponse()->append($result);
+                }
             } catch (\Throwable $e) {
                 $this->warn($e);
             }
