@@ -102,17 +102,13 @@ class RouteAspect extends OrderAspect
                 $clientData->getResponse()->append($result);
             }
         } catch (\Throwable $e) {
-            try {
-                //这里的错误会移交给IndexController处理
-                $controllerInstance = $this->getController($this->routeConfig->getErrorControllerName());
-                $controllerInstance->initialization($routeTool->getControllerName(), $routeTool->getMethodName());
+            //这里的错误会移交给IndexController处理
+            $controllerInstance = $this->getController($this->routeConfig->getErrorControllerName());
+            $controllerInstance->initialization($routeTool->getControllerName(), $routeTool->getMethodName());
 
-                $result = $controllerInstance->onExceptionHandle($e);
-                if (!empty($result)) {
-                    $clientData->getResponse()->append($result);
-                }
-            } catch (\Throwable $e) {
-                $this->warn($e);
+            $result = $controllerInstance->onExceptionHandle($e);
+            if (!empty($result)) {
+                $clientData->getResponse()->append($result);
             }
             throw $e;
         }
