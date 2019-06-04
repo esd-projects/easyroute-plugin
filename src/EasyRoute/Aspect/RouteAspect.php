@@ -17,6 +17,7 @@ use ESD\Plugins\EasyRoute\EasyRouteConfig;
 use ESD\Plugins\EasyRoute\RouteConfig;
 use ESD\Plugins\EasyRoute\RouteException;
 use ESD\Plugins\EasyRoute\RouteTool\IRoute;
+use ESD\Plugins\Pack\Aspect\PackAspect;
 use ESD\Plugins\Pack\ClientData;
 use ESD\Plugins\Pack\GetBoostSend;
 use Go\Aop\Intercept\MethodInvocation;
@@ -60,6 +61,7 @@ class RouteAspect extends OrderAspect
             }
         }
         $this->routeConfig = $routeConfig;
+        $this->atAfter(PackAspect::class);
     }
 
     /**
