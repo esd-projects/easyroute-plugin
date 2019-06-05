@@ -8,7 +8,9 @@
 
 namespace ESD\Plugins\EasyRoute\Controller;
 
-interface IController
+use ESD\Psr\Tracing\TracingInterface;
+
+interface IController extends TracingInterface
 {
     public function handle(?string $controllerName, ?string $methodName, ?array $params);
 
