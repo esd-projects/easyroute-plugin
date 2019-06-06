@@ -241,14 +241,13 @@ class RouteAspect extends OrderAspect
             $controllerInstance->handle($routeTool->getControllerName(), $routeTool->getMethodName(), $routeTool->getParams());
         } catch (\Throwable $e) {
             try {
-                //这里的错误会移交给IndexController处理
+                //这里的错误会移交给ErrorController处理
                 $controllerInstance = $this->getController($this->routeConfig->getErrorControllerName());
                 $controllerInstance->initialization($routeTool->getControllerName(), $routeTool->getMethodName());
                 $controllerInstance->onExceptionHandle($e);
             } catch (\Throwable $e) {
                 $this->warn($e);
             }
-            throw $e;
         }
         return;
     }

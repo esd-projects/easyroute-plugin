@@ -107,6 +107,7 @@ abstract class EasyController implements IController
      */
     public function onExceptionHandle(\Throwable $e)
     {
+        setContextValue("lastException", $e);
         if ($this->clientData->getResponse() != null) {
             $this->response->withStatus(404);
             $this->response->withHeader("Content-Type", "text/html;charset=UTF-8");
