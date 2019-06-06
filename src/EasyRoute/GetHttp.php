@@ -53,6 +53,22 @@ trait GetHttp
         return $this->paramsRequire($key, 'input');
     }
 
+    public function postRawJson(){
+        if (!$json = json_decode($this->getRequest()->getBody()->getContents(), true)) {
+            $this->warning('postRawJson errror, raw:' . $this->getRequest()->getBody()->getContents());
+            throw new RouteException('RawJson Format error');
+        }
+        return $json;
+    }
+    public function postRawXml(){
+        $raw = $this->getRequest()->getBody()->getContents();
+        if (!$xml = simplexml_load_string($raw, 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS)) {
+            $this->warning('RequestRawXml errror, raw:' . $this->getRequest()->getBody()->getContents());
+            throw new RouteException('RawXml Format error');
+        }
+        return $xml;
+    }
+
 
     /**
      * @param $key
