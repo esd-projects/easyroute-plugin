@@ -154,6 +154,7 @@ class EasyRoutePlugin extends AbstractPlugin
             //添加注解里的
             foreach ($reflectionMethods as $reflectionMethod) {
                 $reflectionClass = $reflectionMethod->getParentReflectClass();
+                if ($this->scanClass->getCachedReader()->getClassAnnotation($reflectionClass, Controller::class) == null) continue;
                 $route = "/";
                 $controller = $this->scanClass->getCachedReader()->getClassAnnotation($reflectionClass, Controller::class);
                 if ($controller instanceof Controller) {
