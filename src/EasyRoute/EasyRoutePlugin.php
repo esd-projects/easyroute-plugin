@@ -156,8 +156,8 @@ class EasyRoutePlugin extends AbstractPlugin
                 $reflectionClass = $reflectionMethod->getParentReflectClass();
                 if ($this->scanClass->getCachedReader()->getClassAnnotation($reflectionClass, Controller::class) == null) continue;
                 $route = "/";
-                $requestMapping = $this->scanClass->getCachedReader()->getClassAnnotation($reflectionClass, RequestMapping::class);
-                $controller = $this->scanClass->getCachedReader()->getClassAnnotation($reflectionClass, Controller::class);
+                $requestMapping = $this->scanClass->getClassAndInterfaceAnnotation($reflectionClass, RequestMapping::class);
+                $controller = $this->scanClass->getClassAndInterfaceAnnotation($reflectionClass, Controller::class);
                 if ($controller instanceof Controller) {
                     $controller->value = trim($controller->value, "/");
                     $route .= $controller->value;
@@ -167,13 +167,13 @@ class EasyRoutePlugin extends AbstractPlugin
                     $requestMapping->value = trim($requestMapping->value, "/");
                     $route .= $requestMapping->value;
                 }
-                $requestMapping = $this->scanClass->getCachedReader()->getMethodAnnotation($reflectionMethod->getReflectionMethod(), RequestMapping::class);
+                $requestMapping = $this->scanClass->getMethodAndInterfaceAnnotation($reflectionMethod->getReflectionMethod(), RequestMapping::class);
                 if ($requestMapping instanceof RequestMapping) {
                     if (empty($requestMapping->value)) {
                         $requestMapping->value = $reflectionMethod->getName();
                     }
                     $requestMapping->value = trim($requestMapping->value, "/");
-                    if (empty($controller->value)) {
+                    if ($route == "/") {
                         $route .= $requestMapping->value;
                     } else {
                         $route .= "/" . $requestMapping->value;
