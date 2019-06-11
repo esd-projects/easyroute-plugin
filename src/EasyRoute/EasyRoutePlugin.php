@@ -157,7 +157,7 @@ class EasyRoutePlugin extends AbstractPlugin
                 if ($this->scanClass->getCachedReader()->getClassAnnotation($reflectionClass, Controller::class) == null) continue;
                 $route = "/";
                 $requestMapping = $this->scanClass->getClassAndInterfaceAnnotation($reflectionClass, RequestMapping::class);
-                $controller = $this->scanClass->getClassAndInterfaceAnnotation($reflectionClass, Controller::class);
+                $controller = $this->scanClass->getCachedReader()->getClassAnnotation($reflectionClass, Controller::class);
                 if ($controller instanceof Controller) {
                     $controller->value = trim($controller->value, "/");
                     $route .= $controller->value;
