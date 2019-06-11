@@ -156,10 +156,16 @@ class EasyRoutePlugin extends AbstractPlugin
                 $reflectionClass = $reflectionMethod->getParentReflectClass();
                 if ($this->scanClass->getCachedReader()->getClassAnnotation($reflectionClass, Controller::class) == null) continue;
                 $route = "/";
+                $requestMapping = $this->scanClass->getCachedReader()->getClassAnnotation($reflectionClass, RequestMapping::class);
                 $controller = $this->scanClass->getCachedReader()->getClassAnnotation($reflectionClass, Controller::class);
                 if ($controller instanceof Controller) {
                     $controller->value = trim($controller->value, "/");
                     $route .= $controller->value;
+                }
+                if ($requestMapping instanceof RequestMapping) {
+                    $route = "/";
+                    $requestMapping->value = trim($requestMapping->value, "/");
+                    $route .= $requestMapping->value;
                 }
                 $requestMapping = $this->scanClass->getCachedReader()->getMethodAnnotation($reflectionMethod->getReflectionMethod(), RequestMapping::class);
                 if ($requestMapping instanceof RequestMapping) {
