@@ -66,7 +66,7 @@ class AnnotationRoute implements IRoute
                 $this->clientData->setMethodName($handler[1]->name);
                 $params = [];
                 $methodReflection = $handler[1]->getReflectionMethod();
-                foreach (EasyRoutePlugin::$instance->getScanClass()->getCachedReader()->getMethodAnnotations($methodReflection) as $annotation) {
+                foreach (EasyRoutePlugin::$instance->getScanClass()->getMethodAndInterfaceAnnotations($methodReflection) as $annotation) {
                     if ($annotation instanceof ResponseBody) {
                         $data->getResponse()->withHeader("Content-Type", $annotation->value);
                     }
