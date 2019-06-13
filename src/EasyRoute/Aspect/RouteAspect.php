@@ -88,6 +88,7 @@ class RouteAspect extends OrderAspect
          * @var $clientData ClientData
          */
         $clientData = getContextValueByClassName(ClientData::class);
+        if ($clientData == null) return;
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         $clientData->getResponse()->withHeader('Server', Server::$instance->getServerConfig()->getName());
         try {
@@ -155,6 +156,7 @@ class RouteAspect extends OrderAspect
          * @var $clientData ClientData
          */
         $clientData = getContextValueByClassName(ClientData::class);
+        if ($clientData == null) return;
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
             $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
@@ -194,6 +196,7 @@ class RouteAspect extends OrderAspect
          * @var $clientData ClientData
          */
         $clientData = getContextValueByClassName(ClientData::class);
+        if ($clientData == null) return;
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
             $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
@@ -232,6 +235,7 @@ class RouteAspect extends OrderAspect
          * @var $clientData ClientData
          */
         $clientData = getContextValueByClassName(ClientData::class);
+        if ($clientData == null) return;
         setContextValue("EasyRouteConfig", $easyRouteConfig);
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
