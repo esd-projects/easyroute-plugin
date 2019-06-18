@@ -34,7 +34,17 @@ class CorsFilter extends AbstractFilter
 
     public function filter(ClientData $clientData): int
     {
-        $clientData->getResponse()->withHeader('Access-Control-Allow-Origin', $this->corsConfig->getAllowOrigin());
+        if($this->corsConfig->getAllowOrigin() == '*'){
+            $clientData->getResponse()->withHeader('Access-Control-Allow-Origin', $this->corsConfig->getAllowOrigin());
+        }else{
+            $origin = $clientData->getRequest()->getHeader('origin');
+            if(!empty($origin)){
+                $originBlackList = explode(',',$this->corsConfig->getAllowOrigin());
+                if(in_array($origin[0],$originBlackList)){
+                    $clientData->getResponse()->withHeader('Access-Control-Allow-Origin', $origin[0]);
+                }
+            }
+        }
         $clientData->getResponse()->withHeader('Access-Control-Allow-Credentials', $this->corsConfig->isAllowCredentials());
         $clientData->getResponse()->withHeader('Access-Control-Allow-Methods', $this->corsConfig->getAllowMethods());
         $clientData->getResponse()->withHeader('Access-Control-Allow-Headers', $this->corsConfig->getAllowHeaders());
