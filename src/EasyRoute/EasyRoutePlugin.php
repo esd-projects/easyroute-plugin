@@ -22,6 +22,8 @@ use ESD\Plugins\Aop\AopConfig;
 use ESD\Plugins\EasyRoute\Annotation\Controller;
 use ESD\Plugins\EasyRoute\Annotation\RequestMapping;
 use ESD\Plugins\EasyRoute\Aspect\RouteAspect;
+use ESD\Plugins\EasyRoute\Filter\FilterManager;
+use ESD\Plugins\EasyRoute\Filter\ServerFilter;
 use ESD\Plugins\Pack\ClientData;
 use ESD\Plugins\Pack\ClientDataProxy;
 use ESD\Plugins\Pack\PackPlugin;
@@ -58,8 +60,14 @@ class EasyRoutePlugin extends AbstractPlugin
     private $scanClass;
 
     /**
+     * @var FilterManager
+     */
+    private $filterManager;
+
+    /**
      * EasyRoutePlugin constructor.
      * @param RouteConfig|null $routeConfig
+     * @throws \ReflectionException
      */
     public function __construct(?RouteConfig $routeConfig = null)
     {
@@ -72,6 +80,7 @@ class EasyRoutePlugin extends AbstractPlugin
         $this->atAfter(AnnotationsScanPlugin::class);
         $this->atAfter(ValidatePlugin::class);
         $this->atAfter(PackPlugin::class);
+        $this->filterManager = DIGet(FilterManager::class);
         self::$instance = $this;
     }
 
@@ -89,6 +98,7 @@ class EasyRoutePlugin extends AbstractPlugin
      * @return mixed|void
      * @throws \ESD\Core\Plugins\Config\ConfigException
      * @throws \ESD\Core\Exception
+     * @throws \ReflectionException
      */
     public function init(Context $context)
     {
@@ -110,7 +120,10 @@ class EasyRoutePlugin extends AbstractPlugin
     /**
      * @param PluginInterfaceManager $pluginInterfaceManager
      * @return mixed|void
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      * @throws \ESD\Core\Exception
+     * @throws \ReflectionException
      */
     public function onAdded(PluginInterfaceManager $pluginInterfaceManager)
     {
@@ -129,6 +142,7 @@ class EasyRoutePlugin extends AbstractPlugin
     {
         $this->routeConfig->merge();
         $this->setToDIContainer(ClientData::class, new ClientDataProxy());
+        $this->filterManager->addFilter(new ServerFilter());
     }
 
     /**
@@ -207,6 +221,7 @@ class EasyRoutePlugin extends AbstractPlugin
      * @param $reflectionClass
      * @param $reflectionMethod
      * @throws \ESD\Core\Plugins\Config\ConfigException
+     * @throws \ReflectionException
      */
     protected function addRoute(RouteRoleConfig $routeRole, RouteCollector $r, $reflectionClass, $reflectionMethod)
     {

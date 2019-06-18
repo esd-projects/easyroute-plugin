@@ -58,7 +58,18 @@ class AnnotationRoute implements IRoute
                 throw new RouteException("{$this->clientData->getPath()} 404 Not found");
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
-                throw new MethodNotAllowedException("Method not allowed");
+                if ($this->clientData->getRequest()->getMethod() == "OPTIONS") {
+                    $methods = [];
+                    foreach ($routeInfo[1] as $value) {
+                        list($port, $method) = explode(":", $value);
+                        $methods[] = $method;
+                    }
+                    $this->clientData->getResponse()->withHeader("Access-Control-Allow-Methods", implode(",", $methods));
+                    $this->clientData->getResponse()->end();
+                    return false;
+                } else {
+                    throw new MethodNotAllowedException("Method not allowed");
+                }
             case Dispatcher::FOUND: // 找到对应的方法
                 $handler = $routeInfo[1]; // 获得处理函数
                 $vars = $routeInfo[2]; // 获取请求参数

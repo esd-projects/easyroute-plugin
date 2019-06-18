@@ -10,10 +10,11 @@ namespace ESD\Plugins\EasyRoute\Aspect;
 
 
 use ESD\Core\Plugins\Logger\GetLogger;
-use ESD\Core\Server\Server;
 use ESD\Plugins\Aop\OrderAspect;
 use ESD\Plugins\EasyRoute\Controller\IController;
 use ESD\Plugins\EasyRoute\EasyRouteConfig;
+use ESD\Plugins\EasyRoute\Filter\AbstractFilter;
+use ESD\Plugins\EasyRoute\Filter\FilterManager;
 use ESD\Plugins\EasyRoute\RouteConfig;
 use ESD\Plugins\EasyRoute\RouteException;
 use ESD\Plugins\EasyRoute\RouteTool\IRoute;
@@ -47,6 +48,11 @@ class RouteAspect extends OrderAspect
     protected $routeConfig;
 
     /**
+     * @var FilterManager
+     */
+    protected $filterManager;
+
+    /**
      * RouteAspect constructor.
      * @param $easyRouteConfigs
      * @param $routeConfig
@@ -61,6 +67,7 @@ class RouteAspect extends OrderAspect
             }
         }
         $this->routeConfig = $routeConfig;
+        $this->filterManager = DIGet(FilterManager::class);
         $this->atAfter(PackAspect::class);
     }
 
@@ -89,19 +96,15 @@ class RouteAspect extends OrderAspect
          */
         $clientData = getContextValueByClassName(ClientData::class);
         if ($clientData == null) return;
+        if ($this->filterManager->filter(AbstractFilter::FILTER_PRE, $clientData) == AbstractFilter::RETURN_END_ROUTE) return;
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
-        $clientData->getResponse()->withHeader('Server', Server::$instance->getServerConfig()->getName());
         try {
-            $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
-            if (!$result) return;
+            if (!$routeTool->handleClientData($clientData, $easyRouteConfig)) return;
             $controllerInstance = $this->getController($routeTool->getControllerName());
-            $result = $controllerInstance->handle($routeTool->getControllerName(), $routeTool->getMethodName(), $routeTool->getParams());
-            if (!empty($result)) {
-                if (is_array($result) || is_object($result)) {
-                    $result = json_encode($result, JSON_UNESCAPED_UNICODE);
-                }
-                $clientData->getResponse()->append($result);
-            }
+            $clientData->setResponseRaw($controllerInstance->handle($routeTool->getControllerName(), $routeTool->getMethodName(), $routeTool->getParams()));
+            if ($this->filterManager->filter(AbstractFilter::FILTER_ROUTE, $clientData) == AbstractFilter::RETURN_END_ROUTE) return;
+            $clientData->getResponse()->append($clientData->getResponseRaw());
+            $this->filterManager->filter(AbstractFilter::FILTER_PRO, $clientData);
         } catch (\Throwable $e) {
             //这里的错误会移交给IndexController处理
             $controllerInstance = $this->getController($this->routeConfig->getErrorControllerName());
@@ -157,15 +160,14 @@ class RouteAspect extends OrderAspect
          */
         $clientData = getContextValueByClassName(ClientData::class);
         if ($clientData == null) return;
+        if ($this->filterManager->filter(AbstractFilter::FILTER_PRE, $clientData) == AbstractFilter::RETURN_END_ROUTE) return;
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
-            $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
-            if (!$result) return;
+            if (!$routeTool->handleClientData($clientData, $easyRouteConfig)) return;
             $controllerInstance = $this->getController($routeTool->getControllerName());
-            $result = $controllerInstance->handle($routeTool->getControllerName(), $routeTool->getMethodName(), $routeTool->getParams());
-            if ($result != null) {
-                $this->autoBoostSend($clientData->getFd(), $result);
-            }
+            $clientData->setResponseRaw($controllerInstance->handle($routeTool->getControllerName(), $routeTool->getMethodName(), $routeTool->getParams()));
+            if ($this->filterManager->filter(AbstractFilter::FILTER_ROUTE, $clientData) == AbstractFilter::RETURN_END_ROUTE) return;
+            $this->autoBoostSend($clientData->getFd(), $clientData->getResponseRaw());
         } catch (\Throwable $e) {
             try {
                 //这里的错误会移交给IndexController处理
@@ -197,15 +199,14 @@ class RouteAspect extends OrderAspect
          */
         $clientData = getContextValueByClassName(ClientData::class);
         if ($clientData == null) return;
+        if ($this->filterManager->filter(AbstractFilter::FILTER_PRE, $clientData) == AbstractFilter::RETURN_END_ROUTE) return;
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
-            $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
-            if (!$result) return;
+            if (!$routeTool->handleClientData($clientData, $easyRouteConfig)) return;
             $controllerInstance = $this->getController($routeTool->getControllerName());
-            $result = $controllerInstance->handle($routeTool->getControllerName(), $routeTool->getMethodName(), $routeTool->getParams());
-            if ($result != null) {
-                $this->autoBoostSend($clientData->getFd(), $result);
-            }
+            $clientData->setResponseRaw($controllerInstance->handle($routeTool->getControllerName(), $routeTool->getMethodName(), $routeTool->getParams()));
+            if ($this->filterManager->filter(AbstractFilter::FILTER_ROUTE, $clientData) == AbstractFilter::RETURN_END_ROUTE) return;
+            $this->autoBoostSend($clientData->getFd(), $clientData->getResponseRaw());
         } catch (\Throwable $e) {
             try {
                 //这里的错误会移交给IndexController处理
@@ -231,16 +232,16 @@ class RouteAspect extends OrderAspect
     {
         $abstractServerPort = $invocation->getThis();
         $easyRouteConfig = $this->easyRouteConfigs[$abstractServerPort->getPortConfig()->getPort()];
+        setContextValue("EasyRouteConfig", $easyRouteConfig);
         /**
          * @var $clientData ClientData
          */
         $clientData = getContextValueByClassName(ClientData::class);
         if ($clientData == null) return;
-        setContextValue("EasyRouteConfig", $easyRouteConfig);
+        if ($this->filterManager->filter(AbstractFilter::FILTER_PRE, $clientData) == AbstractFilter::RETURN_END_ROUTE) return;
         $routeTool = $this->routeTools[$easyRouteConfig->getRouteTool()];
         try {
-            $result = $routeTool->handleClientData($clientData, $easyRouteConfig);
-            if (!$result) return;
+            if (!$routeTool->handleClientData($clientData, $easyRouteConfig)) return;
             $controllerInstance = $this->getController($routeTool->getControllerName());
             $controllerInstance->handle($routeTool->getControllerName(), $routeTool->getMethodName(), $routeTool->getParams());
         } catch (\Throwable $e) {
