@@ -1,4 +1,6 @@
 esd:
+  logger:
+    level: info
   port:
     http:
       host: 0.0.0.0
@@ -12,4 +14,4 @@ esd:
       open_websocket_protocol: true
 scan:
   include_paths:
-    examples: /mnt/c/Users/administrato/PhpstormProjects/easyroute/exampleClass
+    examples: ${ROOT_DIR}/exampleClass

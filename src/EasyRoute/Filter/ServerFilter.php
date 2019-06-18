@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: administrato
+ * User: 白猫
  * Date: 2019/6/18
  * Time: 11:18
  */
@@ -36,6 +36,6 @@ class ServerFilter extends AbstractFilter
 
     public function isEnable(ClientData $clientData)
     {
-        return true;
+        return $this->isHttp($clientData);
     }
 }

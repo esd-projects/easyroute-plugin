@@ -1,0 +1,57 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: 白猫
+ * Date: 2019/6/18
+ * Time: 11:18
+ */
+
+namespace ESD\Plugins\EasyRoute\Filter;
+
+
+use ESD\Plugins\Pack\ClientData;
+
+class CorsFilter extends AbstractFilter
+{
+
+    /**
+     * @var CorsConfig|null
+     */
+    private $corsConfig;
+
+    public function __construct(?CorsConfig $corsConfig = null)
+    {
+        if ($corsConfig == null) {
+            $corsConfig = new CorsConfig();
+        }
+        $this->corsConfig = $corsConfig;
+    }
+
+    public function getType()
+    {
+        return AbstractFilter::FILTER_PRE;
+    }
+
+    public function filter(ClientData $clientData): int
+    {
+        $clientData->getResponse()->withHeader('Access-Control-Allow-Origin', $this->corsConfig->getAllowOrigin());
+        $clientData->getResponse()->withHeader('Access-Control-Allow-Credentials', $this->corsConfig->isAllowCredentials());
+        $clientData->getResponse()->withHeader('Access-Control-Allow-Methods', $this->corsConfig->getAllowMethods());
+        $clientData->getResponse()->withHeader('Access-Control-Allow-Headers', $this->corsConfig->getAllowHeaders());
+        $clientData->getResponse()->withHeader('Access-Control-Max-Age', $this->corsConfig->getAllowMaxAge());
+        return AbstractFilter::RETURN_NEXT;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return "CorsFilter";
+    }
+
+    public function isEnable(ClientData $clientData)
+    {
+        return $this->isHttp($clientData);
+    }
+}

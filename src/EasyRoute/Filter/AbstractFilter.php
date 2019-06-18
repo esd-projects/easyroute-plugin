@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: administrato
+ * User: 白猫
  * Date: 2019/6/18
  * Time: 10:31
  */
@@ -9,6 +9,7 @@
 namespace ESD\Plugins\EasyRoute\Filter;
 
 use ESD\Core\Order\Order;
+use ESD\Core\Server\Server;
 use ESD\Plugins\Pack\ClientData;
 
 /**
@@ -39,4 +40,9 @@ abstract class AbstractFilter extends Order
     abstract public function getType();
 
     abstract public function filter(ClientData $clientData): int;
+
+    public function isHttp(ClientData $clientData): bool
+    {
+        return Server::$instance->getPortManager()->getPortFromPortNo($clientData->getClientInfo()->getServerPort())->isHttp();
+    }
 }
