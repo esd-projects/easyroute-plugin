@@ -9,7 +9,6 @@
 namespace ESD\Plugins\EasyRoute\Filter;
 
 use ESD\Core\Order\Order;
-use ESD\Core\Server\Server;
 use ESD\Plugins\Pack\ClientData;
 
 /**
@@ -43,6 +42,6 @@ abstract class AbstractFilter extends Order
 
     public function isHttp(ClientData $clientData): bool
     {
-        return Server::$instance->getPortManager()->getPortFromPortNo($clientData->getClientInfo()->getServerPort())->isHttp();
+        return $clientData->getResponse() !== null && $clientData->getRequest() != null;
     }
 }
