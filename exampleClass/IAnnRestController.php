@@ -15,6 +15,7 @@ use ESD\Plugins\EasyRoute\Annotation\PostMapping;
 use ESD\Plugins\EasyRoute\Annotation\RequestBody;
 use ESD\Plugins\EasyRoute\Annotation\RequestMapping;
 use ESD\Plugins\EasyRoute\Annotation\RequestParam;
+use ESD\Plugins\EasyRoute\Annotation\ResponseBody;
 
 /**
  * @RequestMapping("test")
@@ -26,6 +27,7 @@ interface IAnnRestController
     /**
      * get请求
      * @GetMapping("/")
+     * @ResponseBody()
      * @return string
      */
     public function hello();

@@ -23,6 +23,7 @@ use ESD\Plugins\EasyRoute\Annotation\Controller;
 use ESD\Plugins\EasyRoute\Annotation\RequestMapping;
 use ESD\Plugins\EasyRoute\Aspect\RouteAspect;
 use ESD\Plugins\EasyRoute\Filter\FilterManager;
+use ESD\Plugins\EasyRoute\Filter\JsonResponseFilter;
 use ESD\Plugins\EasyRoute\Filter\ServerFilter;
 use ESD\Plugins\Pack\ClientData;
 use ESD\Plugins\Pack\ClientDataProxy;
@@ -143,6 +144,7 @@ class EasyRoutePlugin extends AbstractPlugin
         $this->routeConfig->merge();
         $this->setToDIContainer(ClientData::class, new ClientDataProxy());
         $this->filterManager->addFilter(new ServerFilter());
+        $this->filterManager->addFilter(new JsonResponseFilter());
     }
 
     /**
