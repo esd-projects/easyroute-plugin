@@ -59,7 +59,15 @@ class RouteConfig extends BaseConfig
     public function addRouteRole(RouteRoleConfig $roleConfig)
     {
         if (array_key_exists($roleConfig->getName(), $this->routeRoles)) {
-            Server::$instance->getLog()->warning("重复的路由：{$roleConfig->getName()}");
+
+            $routeRoles = $this->routeRoles[$roleConfig->getName()];
+
+            if ($routeRoles) {
+
+                if (!empty(array_intersect($routeRoles->getPortNames(), $roleConfig->getPortNames()))) {
+                    Server::$instance->getLog()->warning("重复的路由：{$roleConfig->getName()}");
+                }
+            }
         }
         $this->routeRoles[$roleConfig->getName()] = $roleConfig;
     }
